@@ -5,14 +5,13 @@ from itertools import combinations
 
 
 def sum_to(target: int, n: int, values: [int]) -> [int]:
-    """return the product of n values that sum to target"""
+    """return the n values that sum to target"""
     for group in combinations(values, n):
         if sum(group) == target:
             return group
 
 
 def get_puzzle_input() -> [int]:
-    """return a list of integers"""
     with open('input.txt') as f:
         values = [int(line) for line in f.readlines()]
 
