@@ -1,19 +1,14 @@
 #!/usr/bin/env python
 
+import math
 from itertools import combinations
 
-def problem1(values):
-    """return the product of two values summing to 2020"""
-    for a, b in combinations(values, 2):
-        if a + b == 2020:
-            return a * b
 
-
-def problem2(values):
-    """return the product of three values summing to 2020"""
-    for a, b, c  in combinations(values, 3):
-        if a + b + c == 2020:
-            return a * b * c
+def sum_to(target, n, values):
+    """return the product of n values that sum to target"""
+    for tupl in combinations(values, n):
+        if sum(tupl) == target:
+            return tupl
 
 
 def get_puzzle_input():
@@ -26,5 +21,5 @@ def get_puzzle_input():
 
 if __name__ == '__main__':
     values = get_puzzle_input()
-    print('solution 1:', problem1(values))
-    print('solution 2:', problem2(values))
+    print('part 1:', math.prod(sum_to(2020, 2, values)))
+    print('part 2:', math.prod(sum_to(2020, 3, values)))
