@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
-from itertools import permutations
+from itertools import combinations
 
 def problem1(values):
     """return the product of two values summing to 2020"""
-    for a, b in permutations(values, 2):
+    for a, b in combinations(values, 2):
         if a + b == 2020:
             return a * b
 
 
 def problem2(values):
     """return the product of three values summing to 2020"""
-    for a, b, c  in permutations(values, 3):
+    for a, b, c  in combinations(values, 3):
         if a + b + c == 2020:
             return a * b * c
 
