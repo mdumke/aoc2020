@@ -8,4 +8,4 @@ My solutions for the programming challenges posted at https://adventofcode.com/2
 Prerequisites
 -------------
 
-- Python >= 3.7
+- Python >= 3.8
