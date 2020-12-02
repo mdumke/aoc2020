@@ -13,7 +13,7 @@ def count_valid_passwords(records, criterion):
 
 def is_valid_by_old_policy(rec):
     count = countOf(rec.password, rec.char)
-    return count >= rec.int1 and count <= rec.int2
+    return rec.int1 <= count <= rec.int2
 
 
 def is_valid_by_new_policy(rec):
