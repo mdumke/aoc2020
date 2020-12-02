@@ -5,7 +5,7 @@ from itertools import combinations
 
 
 def sum_to(target: int, n: int, values: [int]) -> [int]:
-    """return the n values that sum to target"""
+    """return n values that sum to target"""
     for group in combinations(values, n):
         if sum(group) == target:
             return group
@@ -13,9 +13,7 @@ def sum_to(target: int, n: int, values: [int]) -> [int]:
 
 def get_puzzle_input() -> [int]:
     with open('input.txt') as f:
-        values = [int(line) for line in f.readlines()]
-
-    return values
+        return [int(line) for line in f.readlines()]
 
 
 if __name__ == '__main__':
