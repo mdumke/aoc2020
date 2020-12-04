@@ -19,9 +19,7 @@ def is_valid_passport_basic(p):
 
 
 def is_valid_passport(p):
-    return (
-        is_valid_passport_basic(p) and
-        sum([bool(format_checks[k](v)) for k, v in p.items() if k != 'cid']) == 7)
+    return sum([bool(format_checks[k](v)) for k, v in p.items() if k != 'cid']) == 7
 
 
 if __name__ == '__main__':
