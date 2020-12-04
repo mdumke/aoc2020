@@ -10,7 +10,7 @@ format_checks = {
     'hcl': lambda c: re.match(r'^#[a-f0-9]{6}$', c),
     'ecl': lambda e: re.match(r'^(amb|blu|brn|gry|grn|hzl|oth)$', e),
     'pid': lambda p: re.match(r'^0*', p) and re.match(r'[0-9]{9}$', p),
-    'hgt': lambda h: re.match(r'^(\d+)(?:cm|in)', h) and (
+    'hgt': lambda h: re.match(r'^\d+(?:cm|in)', h) and (
         (150 <= int(h[:-2]) <= 193) if (h[-2:] == 'cm') else (59 <= int(h[:-2]) <= 76))}
 
 
