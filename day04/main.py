@@ -15,7 +15,7 @@ format_checks = {
 
 
 def is_valid_passport_basic(p):
-    return len(p) == 8 or (len(p) == 7 and 'cid' not in p.keys())
+    return len(p) == 8 or (len(p) == 7 and 'cid' not in p)
 
 
 def is_valid_passport(p):
