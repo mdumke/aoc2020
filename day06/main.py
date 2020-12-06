@@ -4,12 +4,12 @@ from collections import Counter
 
 
 def count_any_answered(group):
-    return len(Counter(group.replace('\n', '')))
+    return len(set(group.replace('\n', '')))
 
 
 def count_all_answered(group):
     return sum([count == len(group.split())
-                for _, count in Counter(group.replace('\n', '')).items()])
+                for count in Counter(group.replace('\n', '')).values()])
 
 
 if __name__ == '__main__':
