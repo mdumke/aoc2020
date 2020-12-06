@@ -1,7 +1,7 @@
 """Day 5: Binary Boarding"""
 
 
-def get_doc_ids():
+def get_seat_ids():
     with open('input.txt') as f:
         return [
             int(line[:7].replace('B', '1').replace('F', '0'), base=2) * 8 +
@@ -9,7 +9,7 @@ def get_doc_ids():
             for line in f.read().splitlines()]
 
 
-def find_gap(values):
+def find_missing(values):
     i, offset = 0, values[0]
     while i < len(values):
         if values[i] != offset + i:
@@ -18,6 +18,6 @@ def find_gap(values):
 
 
 if __name__ == '__main__':
-    doc_ids = get_doc_ids()
-    print('part 1:', max(doc_ids))
-    print('part 2:', find_gap(sorted(doc_ids)))
+    seats = get_seat_ids()
+    print('part 1:', max(seats))
+    print('part 2:', find_missing(sorted(seats)))
