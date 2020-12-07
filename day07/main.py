@@ -4,8 +4,8 @@ import re
 
 
 def contains_gold(bag, rules):
-    return any([inner_bag == 'shiny gold' or contains_gold(inner_bag, rules)
-                for inner_bag in rules[bag]])
+    return any((inner_bag == 'shiny gold' or contains_gold(inner_bag, rules)
+                for inner_bag in rules[bag]))
 
 
 def count_containing_bags(bag, rules):
