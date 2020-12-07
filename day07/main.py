@@ -8,8 +8,8 @@ def contains_gold(bag, rules):
                 for inner_bag in rules[bag]))
 
 
-def count_containing_bags(bag, rules):
-    return sum([n + n * count_containing_bags(inner_bag, rules)
+def count_nested_bags(bag, rules):
+    return sum([n + n * count_nested_bags(inner_bag, rules)
                 for inner_bag, n in rules[bag].items()])
 
 
@@ -26,4 +26,4 @@ def load_puzzle_input():
 if __name__ == '__main__':
     rules = load_puzzle_input()
     print('part 1', sum([contains_gold(bag, rules) for bag in rules]))
-    print('part 2:', count_containing_bags('shiny gold', rules))
+    print('part 2:', count_nested_bags('shiny gold', rules))
