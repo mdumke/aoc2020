@@ -4,7 +4,7 @@ import re
 
 
 def run_program(prog) -> (bool, int):
-    """return (has_inifinite_loop, accumulator)"""
+    """return (has_infinite_loop, accumulator)"""
     accum, i = 0, 0
     cache = set()
 
