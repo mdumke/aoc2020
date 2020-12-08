@@ -5,20 +5,19 @@ import re
 
 def run_program(prog) -> (bool, int):
     """return (halted, accumulator)"""
-    accum, i = 0, 0
+    accum, ip = 0, 0
     cache = set()
 
-    while i not in cache and i < len(prog):
-        cache.add(i)
-        op, n = prog[i]
-        if op == 'jmp':
-            i += n
-            continue
-        if op == 'acc':
-            accum += n
-        i += 1
+    def step(accum, ip, op, n):
+        if op == 'jmp': return accum, ip + n
+        if op == 'acc': return accum + n, ip + 1
+        return accum, ip + 1
 
-    return i == len(prog), accum
+    while ip not in cache and ip < len(prog):
+        cache.add(ip)
+        accum, ip = step(accum, ip, *prog[ip])
+
+    return ip == len(prog), accum
 
 
 def repair_program(prog) -> int:
