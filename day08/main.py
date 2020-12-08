@@ -3,7 +3,8 @@
 import re
 
 
-def run_program(prog):
+def run_program(prog) -> (bool, int):
+    """return (has_inifinite_loop, accumulator)"""
     accum, i = 0, 0
     cache = set()
 
@@ -17,19 +18,20 @@ def run_program(prog):
             accum += n
         i += 1
 
-    return accum, i == len(prog)
+    return i < len(prog), accum
 
 
-def repair_program(prog):
+def repair_program(prog) -> int:
+    """return accumulator at halting"""
     for i, (cmd, n) in enumerate(prog):
         if cmd == 'acc':
             continue
 
-        accum, halts = run_program(
+        inf_loop, accumulator = run_program(
             [*prog[:i], ('nop' if cmd == 'jmp' else 'jmp', n), *prog[i+1:]])
 
-        if halts:
-            return accum
+        if not inf_loop:
+            return accumulator
 
 
 if __name__ == '__main__':
@@ -37,5 +39,5 @@ if __name__ == '__main__':
         prog = [(cmd, int(n))
                 for cmd, n in re.findall(r'(\w{3}) ([+-]\d+)', f.read())]
 
-    print('part 1:', run_program(prog)[0])
+    print('part 1:', run_program(prog)[1])
     print('part 2:', repair_program(prog))
