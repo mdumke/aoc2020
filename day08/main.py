@@ -4,7 +4,7 @@ import re
 
 
 def run_program(prog) -> (bool, int):
-    """return (has_infinite_loop, accumulator)"""
+    """return (halted, accumulator)"""
     accum, i = 0, 0
     cache = set()
 
@@ -18,19 +18,19 @@ def run_program(prog) -> (bool, int):
             accum += n
         i += 1
 
-    return i < len(prog), accum
+    return i == len(prog), accum
 
 
 def repair_program(prog) -> int:
-    """return accumulator at halting"""
+    """return accumulator after halting"""
     for i, (op, n) in enumerate(prog):
         if op == 'acc':
             continue
 
         alt_op = 'nop' if op == 'jmp' else 'jmp'
-        inf_loop, accum = run_program([*prog[:i], (alt_op, n), *prog[i+1:]])
+        halted, accum = run_program([*prog[:i], (alt_op, n), *prog[i+1:]])
 
-        if not inf_loop:
+        if halted:
             return accum
 
 
