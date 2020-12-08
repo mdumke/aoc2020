@@ -3,52 +3,33 @@
 import re
 
 
-class CPU:
-    def __init__(self):
-        self.accumulator = 0
-        self.pos = 0
+def run_program(prog):
+    accum, i = 0, 0
+    cache = set()
 
-    def acc(self, n):
-        self.accumulator += n
-        self.pos += 1
+    while i not in cache and i < len(prog):
+        cache.add(i)
+        cmd, n = prog[i]
+        if cmd == 'jmp':
+            i += n
+            continue
+        if cmd == 'acc':
+            accum += n
+        i += 1
 
-    def jmp(self, n):
-        self.pos += n
-
-    def nop(self, n):
-        self.pos += 1
-
-    def run(self, prog):
-        cache = set()
-
-        while self.pos < len(prog):
-            if self.pos in cache:
-                raise Exception('infinite loop')
-            cache.add(self.pos)
-            cmd, n = prog[self.pos]
-            getattr(self, cmd)(n)
-
-        return self.accumulator
+    return accum, i == len(prog)
 
 
-def get_accumulator_at_halt(program):
-    cpu = CPU()
-    try:
-        cpu.run(program)
-    except:
-        return cpu.accumulator
-
-
-def repair_program(program):
-    for i, (cmd, n) in enumerate(program):
+def repair_program(prog):
+    for i, (cmd, n) in enumerate(prog):
         if cmd == 'acc':
             continue
-        try:
-            cpu = CPU()
-            cpu.run([*prog[:i], ('nop' if cmd == 'jmp' else 'jmp', n), *prog[i+1:]])
-            return cpu.accumulator
-        except:
-            pass
+
+        accum, halts = run_program(
+            [*prog[:i], ('nop' if cmd == 'jmp' else 'jmp', n), *prog[i+1:]])
+
+        if halts:
+            return accum
 
 
 if __name__ == '__main__':
@@ -56,5 +37,5 @@ if __name__ == '__main__':
         prog = [(cmd, int(n))
                 for cmd, n in re.findall(r'(\w{3}) ([+-]\d+)', f.read())]
 
-    print('part 1:', get_accumulator_at_halt(prog))
+    print('part 1:', run_program(prog)[0])
     print('part 2:', repair_program(prog))
