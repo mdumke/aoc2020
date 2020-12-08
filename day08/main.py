@@ -27,8 +27,8 @@ def repair_program(prog) -> int:
         if op == 'acc':
             continue
 
-        alt_op = ('nop' if op == 'jmp' else 'jmp', n)
-        inf_loop, accum = run_program([*prog[:i], alt_op, *prog[i+1:]])
+        alt_op = 'nop' if op == 'jmp' else 'jmp'
+        inf_loop, accum = run_program([*prog[:i], (alt_op, n), *prog[i+1:]])
 
         if not inf_loop:
             return accum
