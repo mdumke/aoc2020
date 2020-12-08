@@ -36,8 +36,7 @@ def repair_program(prog) -> int:
 
 if __name__ == '__main__':
     with open('input.txt') as f:
-        prog = [(op, int(n))
-                for op, n in re.findall(r'(\w{3}) ([+-]\d+)', f.read())]
+          prog = [(l[:3], int(l[4:])) for l in f.read().splitlines()]
 
     print('part 1:', run_program(prog)[1])
     print('part 2:', repair_program(prog))
