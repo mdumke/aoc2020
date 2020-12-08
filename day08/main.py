@@ -27,11 +27,11 @@ def repair_program(prog) -> int:
         if cmd == 'acc':
             continue
 
-        inf_loop, accumulator = run_program(
-            [*prog[:i], ('nop' if cmd == 'jmp' else 'jmp', n), *prog[i+1:]])
+        alt_cmd = ('nop' if cmd == 'jmp' else 'jmp', n)
+        inf_loop, accum = run_program([*prog[:i], alt_cmd, *prog[i+1:]])
 
         if not inf_loop:
-            return accumulator
+            return accum
 
 
 if __name__ == '__main__':
