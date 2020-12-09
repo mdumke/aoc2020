@@ -16,7 +16,7 @@ def count_nested_bags(bag, rules):
 def load_puzzle_input():
     """returns dict with format {bag: {inner_bag: n}}"""
     def parse_line(line):
-        (_, bag), *inner = re.findall(r'(\d+|no)? ?(\w+ \w+) bags?', line)
+        (_, bag), *inner = re.findall(r'(\d+|no)?\s?(\w+\s\w+)\sbags?', line)
         return bag, {inner_bag: int(n) for n, inner_bag in inner if n}
 
     with open('input.txt') as f:
