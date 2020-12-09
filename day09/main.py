@@ -14,9 +14,9 @@ def has_pair_summing_to(target, values) -> bool:
     return any((sum(pair) == target for pair in combinations(values, 2)))
 
 
-def find_batch_summing_to(target, size, values) -> List[int]:
+def find_batch_summing_to(target, batch_size, values) -> List[int]:
     return next((batch
-                 for batch in sliding_window(values, size)
+                 for batch in sliding_window(values, batch_size)
                  if sum(batch) == target), None)
 
 
