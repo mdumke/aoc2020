@@ -3,7 +3,7 @@
 import re
 
 
-def run_program(prog) -> (bool, int):
+def run(prog) -> (bool, int):
     """return (halted, accumulator)"""
     accum, ip = 0, 0
     cache = set()
@@ -20,14 +20,14 @@ def run_program(prog) -> (bool, int):
     return ip == len(prog), accum
 
 
-def repair_program(prog) -> int:
+def repair(prog) -> int:
     """return accumulator after halting"""
     for i, (op, n) in enumerate(prog):
         if op == 'acc':
             continue
 
         alt_op = 'nop' if op == 'jmp' else 'jmp'
-        halted, accum = run_program([*prog[:i], (alt_op, n), *prog[i+1:]])
+        halted, accum = run([*prog[:i], (alt_op, n), *prog[i+1:]])
 
         if halted:
             return accum
@@ -37,5 +37,5 @@ if __name__ == '__main__':
     with open('input.txt') as f:
           prog = [(l[:3], int(l[4:])) for l in f.read().splitlines()]
 
-    print('part 1:', run_program(prog)[1])
-    print('part 2:', repair_program(prog))
+    print('part 1:', run(prog)[1])
+    print('part 2:', repair(prog))
