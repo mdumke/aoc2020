@@ -2,17 +2,20 @@
 
 from itertools import combinations
 
+PREAMBLE = 25
 
-def sum_to(target, values):
-    for a, b in combinations(values, 2):
-        if a + b == target:
-            return True
+
+def has_pair_summing_to(target, values):
+    return any((sum(pair) == target for pair in combinations(values, 2)))
+
+
+def sliding_window(values, width):
+    return (values[i:i+width] for i in range(len(values)-width))
 
 
 def find_first_invalid(xmas):
-    for i in range(25, len(xmas)):
-        if not sum_to(xmas[i], xmas[i-25:i]):
-            return xmas[i]
+    return next(n for *preamble, n in sliding_window(xmas, PREAMBLE+1)
+                if not has_pair_summing_to(n, preamble))
 
 
 def find_encryption_weakness(xmas, target):
