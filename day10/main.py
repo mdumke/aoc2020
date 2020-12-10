@@ -4,7 +4,7 @@ from collections import Counter, defaultdict
 
 
 def diff_counts(jolts):
-    diffs = Counter([b - a for a, b in zip(jolts, jolts[1:])])
+    diffs = Counter([a - b for a, b in zip(jolts[1:], jolts)])
     return diffs[1] * diffs[3]
 
 
