@@ -1,28 +1,27 @@
 """Day 10: Adapter Array"""
 
 from functools import lru_cache
-from collections import Counter
+from collections import Counter, defaultdict
 
 
 def diff_counts(jolts):
-    diffs = Counter([b - a for a, b in zip([0, *jolts], jolts)])
+    diffs = Counter([b - a for a, b in zip(jolts, jolts[1:-1])])
     return diffs[1] * (diffs[3] + 1)
 
 
-def count_paths(adapters: set):
-    final = max(adapters)
+def count_paths(jolts: set):
+    paths = defaultdict(int)
+    paths[0] = 1
 
-    @lru_cache
-    def count_from(i):
-        if i == final:
-            return 1
-        return sum([count_from(j) for j in (i+1, i+2, i+3) if j in adapters])
+    for j in jolts[1:]:
+        paths[j] = paths[j-1] + paths[j-2] + paths[j-3]
 
-    return count_from(0)
+    return paths
 
 
 with open('input.txt') as f:
-    adapters = set([int(l) for l in f.readlines()])
+    jolts = sorted([int(l) for l in f.readlines()])
+    jolts = [0, *jolts, jolts[-1] + 3]
 
-    print('part 1:', diff_counts(sorted(adapters)))
-    print('part 2:', count_paths(adapters))
+    print('part 1:', diff_counts(jolts))
+    print('part 2:', count_paths(jolts)[max(jolts)])
