@@ -18,9 +18,10 @@ def count_paths(jolts):
     return paths[jolts[-1]]
 
 
-with open('input.txt') as f:
-    jolts = sorted([int(l) for l in f.readlines()])
-    jolts = [0, *jolts, jolts[-1] + 3]
+if __name__ == '__main__':
+    with open('input.txt') as f:
+        jolts = sorted([int(l) for l in f.readlines()])
+        jolts = [0, *jolts, jolts[-1] + 3]
 
     print('part 1:', diff_counts(jolts))
     print('part 2:', count_paths(jolts))
