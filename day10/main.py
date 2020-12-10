@@ -9,6 +9,7 @@ def diff_counts(jolts):
 
 
 def count_paths(jolts):
+    """return dict of the form { jolt_value: path_count }"""
     paths = defaultdict(int)
     paths[0] = 1
 
@@ -23,4 +24,4 @@ with open('input.txt') as f:
     jolts = [0, *jolts, jolts[-1] + 3]
 
     print('part 1:', diff_counts(jolts))
-    print('part 2:', count_paths(jolts)[max(jolts)])
+    print('part 2:', count_paths(jolts)[jolts[-1]])
