@@ -8,7 +8,7 @@ def diff_counts(jolts):
     return diffs[1] * diffs[3]
 
 
-def count_paths(jolts: set):
+def count_paths(jolts):
     paths = defaultdict(int)
     paths[0] = 1
 
