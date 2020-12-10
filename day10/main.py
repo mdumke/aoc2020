@@ -1,48 +1,28 @@
 """Day 10: Adapter Array"""
 
 from functools import lru_cache
+from collections import Counter
 
 
-def jolt_gaps(adapters):
-    jolts = sorted(list(adapters))
-
-    previous = 0
-    ones, threes = 0, 0
-
-    for jolt in jolts:
-        diff = jolt - previous
-
-        if diff == 1:
-            ones += 1
-        if diff == 3:
-            threes += 1
-
-        previous = jolt
-
-    return ones * (threes + 1)
+def diff_counts(jolts):
+    diffs = Counter([b - a for a, b in zip([0, *jolts], jolts)])
+    return diffs[1] * (diffs[3] + 1)
 
 
-def count_paths(adapters):
-    target = max(adapters) + 3
+def count_paths(adapters: set):
+    final = max(adapters)
 
-    @lru_cache(128)
-    def count_paths_to_target(current):
-        if current + 3 == target:
+    @lru_cache
+    def count_from(i):
+        if i == final:
             return 1
+        return sum([count_from(j) for j in (i+1, i+2, i+3) if j in adapters])
 
-        paths = 0
-
-        for i in [1, 2, 3]:
-            if current + i in adapters:
-                paths += count_paths_to_target(current + i)
-
-        return paths
-
-    return count_paths_to_target(0)
+    return count_from(0)
 
 
 with open('input.txt') as f:
     adapters = set([int(l) for l in f.readlines()])
 
-    print('part 1:', jolt_gaps(adapters))
+    print('part 1:', diff_counts(sorted(adapters)))
     print('part 2:', count_paths(adapters))
