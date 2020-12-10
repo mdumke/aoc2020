@@ -4,8 +4,8 @@ from collections import Counter, defaultdict
 
 
 def diff_counts(jolts):
-    diffs = Counter([b - a for a, b in zip(jolts, jolts[1:-1])])
-    return diffs[1] * (diffs[3] + 1)
+    diffs = Counter([b - a for a, b in zip(jolts, jolts[1:])])
+    return diffs[1] * diffs[3]
 
 
 def count_paths(jolts: set):
