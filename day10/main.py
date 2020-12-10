@@ -1,6 +1,5 @@
 """Day 10: Adapter Array"""
 
-from functools import lru_cache
 from collections import Counter, defaultdict
 
 
