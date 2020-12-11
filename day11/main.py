@@ -30,8 +30,8 @@ def adjacent_is_occupied(x, y, dx, dy, seats):
     return is_valid_position(x+dx, y+dy, seats) and seats[x+dx][y+dy] == '#'
 
 
-def count_neighbors(x, y, pattern, counting_policy):
-    return sum([counting_policy(x, y, dx, dy, pattern)
+def count_neighbors(x, y, pattern, counting_strategy):
+    return sum([counting_strategy(x, y, dx, dy, pattern)
                 for dx, dy in product([-1, 0, 1], repeat=2) if (dx, dy) != (0, 0)])
 
 
