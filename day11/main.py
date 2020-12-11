@@ -7,10 +7,6 @@ def is_valid_position(x, y, list2d):
     return 0 <= x < len(list2d) and 0 <= y < len(list2d[0])
 
 
-def checksum(pattern):
-    return hash(''.join([''.join(line) for line in pattern]))
-
-
 def count(symbol, pattern):
     return sum([s == symbol for row in pattern for s in row])
 
@@ -54,7 +50,7 @@ def stabilize(pattern, tolerance, strategy):
              for y in range(len(pattern[0]))]
             for x in range(len(pattern))]
 
-        if checksum(next_pattern) == checksum(pattern):
+        if next_pattern == pattern:
             return pattern
 
         pattern = next_pattern
