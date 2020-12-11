@@ -2,28 +2,32 @@
 
 from itertools import product
 
+FLOOR = '.'
+EMPTY = 'L'
+OCCUPIED = '#'
+
 
 def is_valid_position(x, y, list2d):
     return 0 <= x < len(list2d) and 0 <= y < len(list2d[0])
 
 
 def count(symbol, pattern):
-    return sum([s == symbol for row in pattern for s in row])
+    return sum((row.count(symbol) for row in pattern))
 
 
 def any_is_occupied(x, y, dx, dy, seats):
     while True:
         x, y = x + dx, y + dy
 
-        if not is_valid_position(x, y, seats) or seats[x][y] == 'L':
+        if not is_valid_position(x, y, seats) or seats[x][y] == EMPTY:
             return False
 
-        if seats[x][y] == '#':
+        if seats[x][y] == OCCUPIED:
             return True
 
 
 def adjacent_is_occupied(x, y, dx, dy, seats):
-    return is_valid_position(x+dx, y+dy, seats) and seats[x+dx][y+dy] == '#'
+    return is_valid_position(x+dx, y+dy, seats) and seats[x+dx][y+dy] == OCCUPIED
 
 
 def count_neighbors(x, y, pattern, counting_strategy):
@@ -32,15 +36,15 @@ def count_neighbors(x, y, pattern, counting_strategy):
 
 
 def update_position(x, y, pattern, tolerance, strategy):
-    symbol = pattern[x][y]
     num_neighbors = count_neighbors(x, y, pattern, strategy)
+    state = pattern[x][y]
 
-    if num_neighbors == 0 and symbol == 'L':
-        symbol = '#'
-    elif num_neighbors >= tolerance and symbol == '#':
-        symbol = 'L'
+    if state == EMPTY and num_neighbors == 0:
+        state = OCCUPIED
+    elif state == OCCUPIED and num_neighbors >= tolerance:
+        state = EMPTY
 
-    return symbol
+    return state
 
 
 def stabilize(pattern, tolerance, strategy):
@@ -60,5 +64,5 @@ if __name__ == '__main__':
     with open('input.txt') as f:
         seats = f.read().splitlines()
 
-    print('part 1:', count('#', stabilize(seats, 4, adjacent_is_occupied)))
-    print('part 2:', count('#', stabilize(seats, 5, any_is_occupied)))
+    print('part 1:', count(OCCUPIED, stabilize(seats, 4, adjacent_is_occupied)))
+    print('part 2:', count(OCCUPIED, stabilize(seats, 5, any_is_occupied)))
