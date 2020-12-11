@@ -31,12 +31,13 @@ def is_occupied(x, y, dx, dy, seats, only_adjacent):
 
 
 def count_neighbors(x, y, pattern, only_adjacent):
-    """return number of occupied seats seedn from position x, y"""
+    """return number of occupied seats visible from position x, y"""
     return sum([is_occupied(x, y, dx, dy, pattern, only_adjacent)
                 for dx, dy in product([-1, 0, 1], repeat=2) if (dx, dy) != (0, 0)])
 
 
 def update_position(x, y, pattern, tolerance, only_adjacent):
+    """return seat status after next iteration"""
     num_neighbors = count_neighbors(x, y, pattern, only_adjacent)
     state = pattern[x][y]
 
@@ -49,6 +50,7 @@ def update_position(x, y, pattern, tolerance, only_adjacent):
 
 
 def stabilize(pattern, tolerance, only_adjacent=True):
+    """return final seat pattern after convergence"""
     while True:
         next_pattern = [[update_position(x, y, pattern, tolerance, only_adjacent)
                          for y in range(len(pattern[0]))]
