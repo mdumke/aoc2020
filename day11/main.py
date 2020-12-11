@@ -15,7 +15,8 @@ def count_occupied(seats):
     return sum(row.count(OCCUPIED) for row in seats)
 
 
-def any_is_occupied(x, y, dx, dy, seats):
+def is_occupied(x, y, dx, dy, seats, only_adjacent):
+    """return True if a seat in direction dx, dy is occupied"""
     while True:
         x, y = x + dx, y + dy
 
@@ -25,18 +26,18 @@ def any_is_occupied(x, y, dx, dy, seats):
         if seats[x][y] == OCCUPIED:
             return True
 
+        if only_adjacent:
+            return False
 
-def adjacent_is_occupied(x, y, dx, dy, seats):
-    return is_valid_position(x+dx, y+dy, seats) and seats[x+dx][y+dy] == OCCUPIED
 
-
-def count_neighbors(x, y, pattern, counting_strategy):
-    return sum([counting_strategy(x, y, dx, dy, pattern)
+def count_neighbors(x, y, pattern, only_adjacent):
+    """return number of occupied seats seedn from position x, y"""
+    return sum([is_occupied(x, y, dx, dy, pattern, only_adjacent)
                 for dx, dy in product([-1, 0, 1], repeat=2) if (dx, dy) != (0, 0)])
 
 
-def update_position(x, y, pattern, tolerance, strategy):
-    num_neighbors = count_neighbors(x, y, pattern, strategy)
+def update_position(x, y, pattern, tolerance, only_adjacent):
+    num_neighbors = count_neighbors(x, y, pattern, only_adjacent)
     state = pattern[x][y]
 
     if state == EMPTY and num_neighbors == 0:
@@ -47,9 +48,9 @@ def update_position(x, y, pattern, tolerance, strategy):
     return state
 
 
-def stabilize(pattern, tolerance, strategy):
+def stabilize(pattern, tolerance, only_adjacent=True):
     while True:
-        next_pattern = [[update_position(x, y, pattern, tolerance, strategy)
+        next_pattern = [[update_position(x, y, pattern, tolerance, only_adjacent)
                          for y in range(len(pattern[0]))]
                         for x in range(len(pattern))]
 
@@ -63,5 +64,5 @@ if __name__ == '__main__':
     with open('input.txt') as f:
         seats = f.read().splitlines()
 
-    print('part 1:', count_occupied(stabilize(seats, 4, adjacent_is_occupied)))
-    print('part 2:', count_occupied(stabilize(seats, 5, any_is_occupied)))
+    print('part 1:', count_occupied(stabilize(seats, 4)))
+    print('part 2:', count_occupied(stabilize(seats, 5, only_adjacent=False)))
