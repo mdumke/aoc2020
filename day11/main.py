@@ -49,12 +49,17 @@ def update_position(x, y, pattern, tolerance, only_adjacent):
     return state
 
 
+def update_pattern(pattern, tolerance, only_adjacent):
+    """return pattern after one update iteration"""
+    return [[update_position(x, y, pattern, tolerance, only_adjacent)
+             for y in range(len(pattern[0]))]
+            for x in range(len(pattern))]
+
+
 def stabilize(pattern, tolerance, only_adjacent=True):
     """return final seat pattern after convergence"""
     while True:
-        next_pattern = [[update_position(x, y, pattern, tolerance, only_adjacent)
-                         for y in range(len(pattern[0]))]
-                        for x in range(len(pattern))]
+        next_pattern = update_pattern(pattern, tolerance, only_adjacent)
 
         if next_pattern == pattern:
             return pattern
