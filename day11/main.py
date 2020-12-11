@@ -50,9 +50,9 @@ def update_position(x, y, pattern, tolerance, strategy):
 def stabilize(pattern, tolerance, strategy):
     while True:
         next_pattern = [
-            [update_position(i, j, pattern, tolerance, strategy)
-             for j in range(len(pattern[0]))]
-            for i in range(len(pattern))]
+            [update_position(x, y, pattern, tolerance, strategy)
+             for y in range(len(pattern[0]))]
+            for x in range(len(pattern))]
 
         if checksum(next_pattern) == checksum(pattern):
             return pattern
