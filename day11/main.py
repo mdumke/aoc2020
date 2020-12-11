@@ -11,10 +11,6 @@ def is_valid_position(x, y, list2d):
     return 0 <= x < len(list2d) and 0 <= y < len(list2d[0])
 
 
-def count(symbol, pattern):
-    return sum((row.count(symbol) for row in pattern))
-
-
 def any_is_occupied(x, y, dx, dy, seats):
     while True:
         x, y = x + dx, y + dy
@@ -40,22 +36,21 @@ def update_position(x, y, pattern, tolerance, strategy):
     state = pattern[x][y]
 
     if state == EMPTY and num_neighbors == 0:
-        state = OCCUPIED
+        return OCCUPIED
     elif state == OCCUPIED and num_neighbors >= tolerance:
-        state = EMPTY
+        return EMPTY
 
     return state
 
 
-def stabilize(pattern, tolerance, strategy):
+def count_occupied(pattern, tolerance, strategy):
     while True:
-        next_pattern = [
-            [update_position(x, y, pattern, tolerance, strategy)
-             for y in range(len(pattern[0]))]
-            for x in range(len(pattern))]
+        next_pattern = [[update_position(x, y, pattern, tolerance, strategy)
+                         for y in range(len(pattern[0]))]
+                        for x in range(len(pattern))]
 
         if next_pattern == pattern:
-            return pattern
+            return sum(row.count(OCCUPIED) for row in pattern)
 
         pattern = next_pattern
 
@@ -64,5 +59,5 @@ if __name__ == '__main__':
     with open('input.txt') as f:
         seats = f.read().splitlines()
 
-    print('part 1:', count(OCCUPIED, stabilize(seats, 4, adjacent_is_occupied)))
-    print('part 2:', count(OCCUPIED, stabilize(seats, 5, any_is_occupied)))
+    print('part 1:', count_occupied(seats, 4, adjacent_is_occupied))
+    print('part 2:', count_occupied(seats, 5, any_is_occupied))
