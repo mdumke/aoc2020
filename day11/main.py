@@ -35,9 +35,9 @@ def count_neighbors(x, y, seats, counting_policy):
                 for dx, dy in product([-1, 0, 1], repeat=2) if (dx, dy) != (0, 0)])
 
 
-def update_position(x, y, pattern, tolerance, counting_policy):
+def update_position(x, y, pattern, tolerance, strategy):
     symbol = pattern[x][y]
-    num_neighbors = count_neighbors(x, y, pattern, counting_policy)
+    num_neighbors = count_neighbors(x, y, pattern, strategy)
 
     if num_neighbors == 0 and symbol == 'L':
         symbol = '#'
@@ -47,18 +47,12 @@ def update_position(x, y, pattern, tolerance, counting_policy):
     return symbol
 
 
-def zeros_like(pattern):
-    return [[0 for _ in range(len(pattern[0]))] for _ in range(len(pattern))]
-
-
-def stabilize(pattern, tolerance, counting_policy):
+def stabilize(pattern, tolerance, strategy):
     while True:
-        next_pattern = zeros_like(pattern)
-
-        for i in range(len(pattern)):
-            for j in range(len(pattern[0])):
-                next_pattern[i][j] = update_position(
-                    i, j, pattern, tolerance, counting_policy)
+        next_pattern = [
+            [update_position(i, j, pattern, tolerance, strategy)
+             for j in range(len(pattern[0]))]
+            for i in range(len(pattern))]
 
         if checksum(next_pattern) == checksum(pattern):
             return pattern
