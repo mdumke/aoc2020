@@ -31,11 +31,11 @@ def move(x, y, orientation, op, n):
         return (x, y), rotate(orientation, op, n)
 
 
-def compute_destination_distance(instructions):
+def compute_destination_distance(actions):
     position = (0, 0)
     orientation = 'E'
 
-    for op, n in instructions:
+    for op, n in actions:
         position, orientation = move(*position, orientation, op, n)
 
     return manhattan(*position)
@@ -43,6 +43,7 @@ def compute_destination_distance(instructions):
 
 if __name__ == '__main__':
     with open('input.txt') as f:
-        ops = [(op, int(n)) for op, n in re.findall(r'(\w)(\d+)', f.read())]
+        actions = [(op, int(n))
+                   for op, n in re.findall(r'(\w)(\d+)', f.read())]
 
-    print('part 1:', compute_destination_distance(ops))
+    print('part 1:', compute_destination_distance(actions))
