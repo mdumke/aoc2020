@@ -20,10 +20,6 @@ def rotate_coord(x, y, op, n):
     }[n if op == 'R' else 360 - n]
 
 
-def move_in_direction(x, y, dx, dy, steps):
-    return x + steps * dx, y + steps * dy
-
-
 def update_direction(current, side, degrees):
     index = 'NESW'.find(current)
     direction = 1 if side == 'R' else -1
@@ -33,7 +29,6 @@ def update_direction(current, side, degrees):
 def get_distance_part1(actions):
     x, y = 0, 0
     direction = 'E'
-
     for op, n in actions:
         if op == 'F':
             x, y = translate_coord(x, y, direction, n)
@@ -41,22 +36,19 @@ def get_distance_part1(actions):
             x, y = translate_coord(x, y, op, n)
         if op in 'LR':
             direction = update_direction(direction, op, n)
-
     return abs(x) + abs(y)
 
 
 def get_distance_part2(actions):
     x, y = 0, 0
     waypoint = 10, 1
-
     for op, n in actions:
         if op == 'F':
-            x, y = move_in_direction(x, y, *waypoint, n)
+            x, y = x + waypoint[0] * n, y + waypoint[1] * n
         if op in 'NSEW':
             waypoint = translate_coord(*waypoint, op, n)
         if op in 'LR':
             waypoint = rotate_coord(*waypoint, op, n)
-
     return abs(x) + abs(y)
 
 
