@@ -68,8 +68,7 @@ def get_distance_part2(actions):
 
 if __name__ == '__main__':
     with open('input.txt') as f:
-        actions = [(op, int(n))
-                   for op, n in re.findall(r'(\w)(\d+)', f.read())]
+        actions = [(l[0], int(l[1:])) for l in f.read().splitlines()]
 
     print('part 1:', get_distance_part1(actions))
     print('part 2:', get_distance_part2(actions))
