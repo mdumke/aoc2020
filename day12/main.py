@@ -1,7 +1,5 @@
 """Day 12: Rain Risk"""
 
-import re
-
 
 def translate_coord(x, y, direction, n):
     return {
