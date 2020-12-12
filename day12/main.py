@@ -20,10 +20,13 @@ def rotate_coord(x, y, op, n):
     }[n if op == 'R' else 360 - n]
 
 
-def update_direction(current, side, degrees):
-    index = 'NESW'.find(current)
-    direction = 1 if side == 'R' else -1
-    return 'NESW'[(index + (degrees // 90) * direction) % 4]
+def turn(direction, side, degrees):
+    return {
+        'N': 'NESW',
+        'E': 'ESWN',
+        'S': 'SWNE',
+        'W': 'WNES'
+    }[direction][(degrees if side == 'R' else 360 - degrees) // 90]
 
 
 def get_distance_part1(actions):
@@ -35,7 +38,7 @@ def get_distance_part1(actions):
         if op in 'NSEW':
             x, y = translate_coord(x, y, op, n)
         if op in 'LR':
-            direction = update_direction(direction, op, n)
+            direction = turn(direction, op, n)
     return abs(x) + abs(y)
 
 
