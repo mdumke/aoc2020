@@ -25,9 +25,7 @@ def rotate_coord(x, y, op, n):
 
 
 def move_in_direction(x, y, dx, dy, steps):
-    for _ in range(steps):
-        x, y = x + dx, y + dy
-    return x, y
+    return x + steps * dx, y + steps * dy
 
 
 def update_orientation(current, side, degrees):
