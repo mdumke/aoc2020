@@ -3,10 +3,6 @@
 import re
 
 
-def manhattan(x, y):
-    return abs(x) + abs(y)
-
-
 def translate_coord(x, y, direction, n):
     return {
         'N': (x, y + n),
@@ -28,40 +24,40 @@ def move_in_direction(x, y, dx, dy, steps):
     return x + steps * dx, y + steps * dy
 
 
-def update_orientation(current, side, degrees):
+def update_direction(current, side, degrees):
     index = 'NESW'.find(current)
     direction = 1 if side == 'R' else -1
     return 'NESW'[(index + (degrees // 90) * direction) % 4]
 
 
 def get_distance_part1(actions):
-    position = (0, 0)
-    orientation = 'E'
+    x, y = 0, 0
+    direction = 'E'
 
     for op, n in actions:
         if op == 'F':
-            position = translate_coord(*position, orientation, n)
+            x, y = translate_coord(x, y, direction, n)
         if op in 'NSEW':
-            position = translate_coord(*position, op, n)
+            x, y = translate_coord(x, y, op, n)
         if op in 'LR':
-            orientation = update_orientation(orientation, op, n)
+            direction = update_direction(direction, op, n)
 
-    return manhattan(*position)
+    return abs(x) + abs(y)
 
 
 def get_distance_part2(actions):
-    position = (0, 0)
-    waypoint = (10, 1)
+    x, y = 0, 0
+    waypoint = 10, 1
 
     for op, n in actions:
         if op == 'F':
-            position = move_in_direction(*position, *waypoint, n)
+            x, y = move_in_direction(x, y, *waypoint, n)
         if op in 'NSEW':
             waypoint = translate_coord(*waypoint, op, n)
         if op in 'LR':
             waypoint = rotate_coord(*waypoint, op, n)
 
-    return manhattan(*position)
+    return abs(x) + abs(y)
 
 
 if __name__ == '__main__':
