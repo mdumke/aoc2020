@@ -6,14 +6,11 @@ def manhattan(x, y):
 
 
 def update_position(x, y, direction, n):
-    if direction == 'N':
-        return x, y + n
-    if direction == 'S':
-        return x, y - n
-    if direction == 'E':
-        return x + n, y
-    if direction == 'W':
-        return x - n, y
+    return {
+        'N': (x, y + n),
+        'S': (x, y - n),
+        'E': (x + n, y),
+        'W': (x - n, y)}[direction]
 
 
 def rotate(orientation, op, n):
@@ -35,8 +32,8 @@ def compute_destination_distance(actions):
     position = (0, 0)
     orientation = 'E'
 
-    for op, n in actions:
-        position, orientation = move(*position, orientation, op, n)
+    for action in actions:
+        position, orientation = move(*position, orientation, *action)
 
     return manhattan(*position)
 
