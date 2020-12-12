@@ -9,11 +9,11 @@ def manhattan(x, y):
 
 def translate_coord(x, y, direction, n):
     return {
-
         'N': (x, y + n),
         'S': (x, y - n),
         'E': (x + n, y),
-        'W': (x - n, y)}[direction]
+        'W': (x - n, y)
+    }[direction]
 
 
 def rotate_coord(x, y, op, n):
@@ -24,16 +24,16 @@ def rotate_coord(x, y, op, n):
     }[n if op == 'R' else 360 - n]
 
 
-def move_in_direction(x, y, dx, dy, n):
-    for _ in range(n):
+def move_in_direction(x, y, dx, dy, steps):
+    for _ in range(steps):
         x, y = x + dx, y + dy
     return x, y
 
 
-def update_orientation(current, op, n):
+def update_orientation(current, side, degrees):
     index = 'NESW'.find(current)
-    direction = 1 if op == 'R' else -1
-    return 'NESW'[(index + (n // 90) * direction) % 4]
+    direction = 1 if side == 'R' else -1
+    return 'NESW'[(index + (degrees // 90) * direction) % 4]
 
 
 def get_distance_part1(actions):
