@@ -7,17 +7,17 @@ def get_next_bus(buses, start):
     return min([(bus - start % bus, bus) for bus in buses if bus != 'x'])
 
 
-def first_match(time, cycle, target, offset):
-    for i in range(target):
-        if (time + i * cycle + offset) % target == 0:
-            return time + i * cycle, cycle * target
+def match_offset(time, cycle, bus, offset):
+    for i in range(bus):
+        if (time + i * cycle + offset) % bus == 0:
+            return time + i * cycle, cycle * bus
 
 
 def find_earliest_target_pattern(buses):
     time = cycle = buses[0]
     for offset, bus in enumerate(buses[1:], 1):
         if bus != 'x':
-            time, cycle = first_match(time, cycle, bus, offset)
+            time, cycle = match_offset(time, cycle, bus, offset)
     return time
 
 
