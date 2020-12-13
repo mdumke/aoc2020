@@ -5,9 +5,7 @@ import numpy as np
 
 
 def get_next_bus(buses, start):
-    time, id = min([(bus - start % bus, i)
-                    for i, bus in enumerate(buses) if bus != 'x'])
-    return buses[id], time
+    return min([(bus - start % bus, bus) for bus in buses if bus != 'x'])
 
 
 def first_match(start, step, target, offset):
