@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+"""Day 1: Report Repair"""
 
 import math
 from itertools import combinations
@@ -11,12 +11,9 @@ def sum_to(target: int, n: int, values: [int]) -> [int]:
             return group
 
 
-def get_puzzle_input() -> [int]:
-    with open('input.txt') as f:
-        return [int(line) for line in f.readlines()]
-
-
 if __name__ == '__main__':
-    values = get_puzzle_input()
+    with open('input.txt') as f:
+        values = [int(line) for line in f.readlines()]
+
     print('part 1:', math.prod(sum_to(2020, 2, values)))
     print('part 2:', math.prod(sum_to(2020, 3, values)))
