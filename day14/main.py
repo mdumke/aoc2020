@@ -49,7 +49,7 @@ def parse_line(l):
     if op == 'mask':
         return op, val
     else:
-        return int(re.findall(r'(\d+)', op)[0]), bin(int(val))[2:]
+        return int(re.findall(r'\d+', op)[0]), bin(int(val))[2:]
 
 
 if __name__ == '__main__':
