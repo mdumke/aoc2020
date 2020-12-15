@@ -23,5 +23,6 @@ def get_last_spoken(start, turns):
     return last_spoken
 
 
-print('part 1:', get_last_spoken([11, 0, 1, 10, 5, 19], 2020))
-print('part 2:', get_last_spoken([11, 0, 1, 10, 5, 19], 30000000))
+if __name__ == '__main__':
+    print('part 1:', get_last_spoken([11, 0, 1, 10, 5, 19], 2020))
+    print('part 2:', get_last_spoken([11, 0, 1, 10, 5, 19], 30000000))
