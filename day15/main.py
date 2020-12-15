@@ -1,30 +1,27 @@
-starting_seq = [11,0,1,10,5,19]
-
-memory = {n: [i] for i, n in enumerate(starting_seq)}
-memory
+"""Day 15: Rambunctious Recitation"""
 
 
-last_spoken = starting_seq[-1]
+def get_last_spoken(start, turns):
+    memory = {n: [i] for i, n in enumerate(start)}
+    last_spoken = start[-1]
 
-for turn in range(len(starting_seq), 2020):
-    history = memory.get(last_spoken)
+    for turn in range(len(start), turns):
+        history = memory.get(last_spoken)
 
-    if history is None:
-        memory[last_spoken] = [turn]
-        last_spoken = 0
-    elif len(history) == 1:
-        last_spoken = 0
-
-        if last_spoken in memory:
-            memory[last_spoken].append(turn)
-        else:
+        if history is None:
             memory[last_spoken] = [turn]
-    else:
-        last_spoken = history[-1] - history[-2]
+            last_spoken = 0
+            continue
+
+        last_spoken = 0 if len(history) == 1 else history[-1] - history[-2]
 
         if last_spoken in memory:
             memory[last_spoken].append(turn)
         else:
             memory[last_spoken] = [turn]
 
-print('part 1:', last_spoken)
+    return last_spoken
+
+
+print('part 1:', get_last_spoken([11, 0, 1, 10, 5, 19], 2020))
+print('part 2:', get_last_spoken([11, 0, 1, 10, 5, 19], 30000000))
