@@ -14,11 +14,6 @@ def is_covered(value, ranges) -> bool:
     return any(a <= value <= b for a, b in ranges)
 
 
-def is_valid_ticket(ticket, ranges) -> bool:
-    """returns True if all numbers on the ticket fall into one of the ranges"""
-    return all(is_covered(value, ranges) for value in ticket)
-
-
 def get_invalid_values(values, ranges) -> [int]:
     """returns values that do not fall into any given range"""
     return [v for v in values if not is_covered(v, ranges)]
@@ -26,7 +21,7 @@ def get_invalid_values(values, ranges) -> [int]:
 
 def filter_valid_tickets(tickets, ranges) -> np.ndarray:
     """returns only tickets with valid numbers"""
-    return tickets[[i for i, t in enumerate(tickets) if is_valid_ticket(t, ranges)]]
+    return tickets[[i for i, t in enumerate(tickets) if all_covered(t, ranges)]]
 
 
 def get_matching_rules(values, rules) -> [str]:
