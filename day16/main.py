@@ -2,6 +2,7 @@
 
 
 import re
+import math
 import numpy as np
 from more_itertools import flatten, sliced
 from types import SimpleNamespace
@@ -9,15 +10,32 @@ from types import SimpleNamespace
 OPEN, VALUE, CLOSE = '0-open', '1-value', '2-close'
 
 
-def is_covered(value, ranges):
+def is_covered(value, ranges) -> bool:
+    """returns True if the value falls into one of the ranges"""
     return any(a <= value <= b for a, b in ranges)
 
 
-def sum_invalid_values(values, ranges):
-    return sum(v for v in values if not is_covered(v, ranges))
+def is_valid_ticket(ticket, ranges) -> bool:
+    """returns True if all numbers on the ticket fall into one of the ranges"""
+    return all(is_covered(value, ranges) for value in ticket)
 
 
-def combine_ranges(ranges):
+def get_invalid_values(values, ranges) -> [int]:
+    """returns values that do not fall into any given range"""
+    return [v for v in values if not is_covered(v, ranges)]
+
+
+def filter_valid_tickets(tickets, ranges) -> np.ndarray:
+    """returns only tickets with valid numbers"""
+    return tickets[[i for i, t in enumerate(tickets) if is_valid_ticket(t, ranges)]]
+
+
+def get_matching_rules(values, rules) -> [str]:
+    """returns the names of all rules that cover the given values"""
+    return [name for name, ranges in zip(rules.names, rules.ranges) if all_covered(values, ranges)]
+
+
+def combine_ranges(ranges) -> [(int, int)]:
     """Combines overlapping and adjacent ranges
 
     example:
@@ -34,15 +52,7 @@ def combine_ranges(ranges):
     return [tuple(pair) for pair in sliced(result, 2)]
 
 
-def is_valid_ticket(ticket, ranges):
-    return all(is_covered(value, ranges) for value in ticket)
-
-
-def filter_valid_tickets(tickets, ranges):
-    return tickets[[i for i, t in enumerate(tickets) if is_valid_ticket(t, ranges)]]
-
-
-def all_covered(values, ranges):
+def all_covered(values, ranges) -> bool:
     """returns True if all values fall inside one of the ranges"""
     # create a sorted list like [(2, OPEN), (5, VALUE), (5, CLOSE)]
     numbers = sorted([
@@ -60,17 +70,13 @@ def all_covered(values, ranges):
     return True
 
 
-def get_matching_rules(values, rule_ranges, rule_names):
-    """returns the names of all rules that match the given values"""
-    return [name for name, ranges in zip(rule_names, rule_ranges) if all_covered(values, ranges)]
-
-
-def part2(rule_names, rule_ranges, my_ticket, tickets):
-    valid_tickets = filter_valid_tickets(tickets, combine_ranges(rule_ranges))
+def get_departure_info(rules, my_ticket, tickets) -> [int]:
+    """returns ticket-values in departure-fields"""
+    valid_tickets = filter_valid_tickets(tickets, combine_ranges(rules.ranges))
     possible_fields = []
 
     for i, field in enumerate(valid_tickets.T):
-        matches = get_matching_rules(field, rule_ranges, rule_names)
+        matches = get_matching_rules(field, rules)
         possible_fields.append((i, matches))
 
     fields = {}
@@ -80,13 +86,7 @@ def part2(rule_names, rule_ranges, my_ticket, tickets):
             if not fields.get(field):
                 fields[field] = n
 
-    total = 1
-
-    for name, position in fields.items():
-        if 'departure' in name:
-            total *= my_ticket[position]
-
-    return total
+    return [my_ticket[i] for name, i in fields.items() if 'departure' in name]
 
 
 def load_puzzle_input():
@@ -124,6 +124,6 @@ def load_puzzle_input():
 if __name__ == '__main__':
     rules, my_ticket, tickets = load_puzzle_input()
 
-    print('part 1:', sum_invalid_values(
-        tickets.ravel(), combine_ranges(rules.ranges)))
-    print('part 2:', part2(rules.names, rules.ranges, my_ticket, tickets))
+    print('part 1:', sum(get_invalid_values(
+        tickets.ravel(), combine_ranges(rules.ranges))))
+    print('part 2:', math.prod(get_departure_info(rules, my_ticket, tickets)))
