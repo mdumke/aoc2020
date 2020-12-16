@@ -1,6 +1,5 @@
 """Day 16: Ticket Translation"""
 
-
 import re
 import math
 import numpy as np
@@ -49,12 +48,13 @@ def combine_ranges(ranges) -> [(int, int)]:
         else:
             result.extend((a, b))
 
-    return [tuple(pair) for pair in sliced(result, 2)]
+    return list(sliced(result, 2))
 
 
 def all_covered(values, ranges) -> bool:
     """returns True if all values fall inside one of the ranges"""
     # create a sorted list like [(2, OPEN), (5, VALUE), (5, CLOSE)]
+    # OPEN/CLOSE refer to the endpoints of a range
     numbers = sorted([
         *list(flatten([[(a, OPEN), (b, CLOSE)] for a, b in ranges])),
         *[(v, VALUE) for v in values]])
@@ -73,19 +73,19 @@ def all_covered(values, ranges) -> bool:
 def get_departure_info(rules, my_ticket, tickets) -> [int]:
     """returns ticket-values in departure-fields"""
     valid_tickets = filter_valid_tickets(tickets, combine_ranges(rules.ranges))
-    possible_fields = []
 
-    for i, field in enumerate(valid_tickets.T):
-        matches = get_matching_rules(field, rules)
-        possible_fields.append((i, matches))
+    # [(0, ['class', 'seat']), ...]
+    possible_fields = [(i, get_matching_rules(field, rules))
+                       for i, field in enumerate(valid_tickets.T)]
 
+    # {'class': 3}
     fields = {}
-
     for n, candidates in sorted(possible_fields, key=lambda f: len(f[1])):
         for field in candidates:
             if not fields.get(field):
                 fields[field] = n
 
+    # look up values from the ticket's departure fields
     return [my_ticket[i] for name, i in fields.items() if 'departure' in name]
 
 
