@@ -1,16 +1,21 @@
 """Day 16: Ticket Translation"""
 
+
 import re
 import numpy as np
 from more_itertools import flatten, sliced
+from types import SimpleNamespace
 
 OPEN, VALUE, CLOSE = '0-open', '1-value', '2-close'
+
 
 def is_covered(value, ranges):
     return any(a <= value <= b for a, b in ranges)
 
+
 def sum_invalid_values(values, ranges):
     return sum(v for v in values if not is_covered(v, ranges))
+
 
 def combine_ranges(ranges):
     """Combines overlapping and adjacent ranges
@@ -29,27 +34,13 @@ def combine_ranges(ranges):
     return [tuple(pair) for pair in sliced(result, 2)]
 
 
-def parse_rules(lines):
-    rule_names = []
-    rule_ranges = []
-
-    range_pattern = re.compile(r'(\d+)-(\d+)')
-
-    for line in lines.split('\n'):
-        name, ranges = line.split(':')
-        rule_names.append(name)
-        rule_ranges.append([(int(a), int(b)) for a, b in re.findall(range_pattern, ranges)])
-
-    return rule_names, rule_ranges
-
-def parse_my_ticket(line):
-    return [int(i) for i in line.split('\n')[1].split(',')]
-
 def is_valid_ticket(ticket, ranges):
     return all(is_covered(value, ranges) for value in ticket)
 
+
 def filter_valid_tickets(tickets, ranges):
     return tickets[[i for i, t in enumerate(tickets) if is_valid_ticket(t, ranges)]]
+
 
 def all_covered(values, ranges):
     """returns True if all values fall inside one of the ranges"""
@@ -68,14 +59,11 @@ def all_covered(values, ranges):
 
     return True
 
+
 def get_matching_rules(values, rule_ranges, rule_names):
     """returns the names of all rules that match the given values"""
     return [name for name, ranges in zip(rule_names, rule_ranges) if all_covered(values, ranges)]
 
-
-def parse_tickets(lines):
-    return np.array([[int(n) for n in line.strip().split(',')]
-                   for line in lines.strip().split('\n')[1:]])
 
 def part2(rule_names, rule_ranges, my_ticket, tickets):
     valid_tickets = filter_valid_tickets(tickets, combine_ranges(rule_ranges))
@@ -101,13 +89,40 @@ def part2(rule_names, rule_ranges, my_ticket, tickets):
     return total
 
 
-if __name__ == '__main__':
+def load_input():
+    def parse_rules(lines):
+        rule_names = []
+        rule_ranges = []
+
+        range_pattern = re.compile(r'(\d+)-(\d+)')
+
+        for line in lines.split('\n'):
+            name, ranges = line.split(':')
+            rule_names.append(name)
+            rule_ranges.append([(int(a), int(b))
+                                for a, b in re.findall(range_pattern, ranges)])
+
+        return SimpleNamespace(names=rule_names, ranges=rule_ranges)
+
+    def parse_my_ticket(line):
+        return [int(i) for i in line.split('\n')[1].split(',')]
+
+    def parse_tickets(lines):
+        return np.array([[int(n) for n in line.strip().split(',')]
+                         for line in lines.strip().split('\n')[1:]])
+
     with open('input.txt') as f:
         section1, section2, section3 = f.read().split('\n\n')
 
-    rule_names, rule_ranges = parse_rules(section1)
-    my_ticket = parse_my_ticket(section2)
-    tickets = parse_tickets(section3)
+    return (
+        parse_rules(section1),
+        parse_my_ticket(section2),
+        parse_tickets(section3))
 
-    print('part 1:', sum_invalid_values(tickets.ravel(), combine_ranges(rule_ranges)))
-    print('part 2:', part2(rule_names, rule_ranges, my_ticket, tickets))
+
+if __name__ == '__main__':
+    rules, my_ticket, tickets = load_input()
+
+    print('part 1:', sum_invalid_values(
+        tickets.ravel(), combine_ranges(rules.ranges)))
+    print('part 2:', part2(rules.names, rules.ranges, my_ticket, tickets))
