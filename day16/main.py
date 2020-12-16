@@ -89,23 +89,24 @@ def part2(rule_names, rule_ranges, my_ticket, tickets):
     return total
 
 
-def load_input():
+def load_puzzle_input():
+    """returns input-tuple with rules, my_ticket, tickets
+
+    returns
+    rules: SimpleNamespace(names: [str], ranges: [(int, int)])
+    my_ticket: numpy.ndarray
+    tickets: 2d numpy.ndarray
+    """
+    range_pattern = re.compile(r'(\d+)-(\d+)')
+
+    def parse_ranges(line):
+        ranges = line.split(':')[1]
+        return [(int(a), int(b)) for a, b in re.findall(range_pattern, ranges)]
+
     def parse_rules(lines):
-        rule_names = []
-        rule_ranges = []
-
-        range_pattern = re.compile(r'(\d+)-(\d+)')
-
-        for line in lines.split('\n'):
-            name, ranges = line.split(':')
-            rule_names.append(name)
-            rule_ranges.append([(int(a), int(b))
-                                for a, b in re.findall(range_pattern, ranges)])
-
-        return SimpleNamespace(names=rule_names, ranges=rule_ranges)
-
-    def parse_my_ticket(line):
-        return [int(i) for i in line.split('\n')[1].split(',')]
+        names = [line.split(':')[0] for line in lines.split('\n')]
+        ranges = [parse_ranges(line) for line in lines.split('\n')]
+        return SimpleNamespace(names=names, ranges=ranges)
 
     def parse_tickets(lines):
         return np.array([[int(n) for n in line.strip().split(',')]
@@ -116,12 +117,12 @@ def load_input():
 
     return (
         parse_rules(section1),
-        parse_my_ticket(section2),
+        parse_tickets(section2)[0],
         parse_tickets(section3))
 
 
 if __name__ == '__main__':
-    rules, my_ticket, tickets = load_input()
+    rules, my_ticket, tickets = load_puzzle_input()
 
     print('part 1:', sum_invalid_values(
         tickets.ravel(), combine_ranges(rules.ranges)))
