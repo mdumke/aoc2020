@@ -1,50 +1,61 @@
+"""Day 17: Conway Cubes"""
+
 import numpy as np
 
-def coords_3d(grid, padding=1):
-    max_i, max_j, max_k = grid.shape
-    for i in range(-padding, max_i+padding):
-        for j in range(-padding, max_j+padding):
-            for k in range(-padding, max_k+padding):
-                yield(i, j, k)
+def is_valid_coord(coord, shape):
+    for i in range(len(coord)):
+        if coord[i] < 0 or coord[i] >= shape[i]:
+            return False
+    return True
 
+def shift_coord(coord, offset):
+    return tuple(dim + offset for dim in coord)
 
-def is_valid_coord(i, j, k, shape):
-    return (0 <= i < shape[0]) and (0 <= j < shape[1]) and (0 <= k < shape[2])
+def iterate_coords(shape, padding=0):
+    if len(shape) == 1:
+        for i in range(-padding, shape[0]+padding):
+            yield (i,)
+    else:
+        for i in range(-padding, shape[0]+padding):
+            for coord in iterate_coords(shape[1:], padding):
+                yield(i, *coord)
 
+def expand(dimensions, width):
+    return tuple(np.array(dimensions) + [width] * len(dimensions))
 
-def get_boxes(grid):
-    for i, j, k in coords_3d(grid):
-        if is_valid_coord(i, j, k, grid.shape):
-            store = grid[i, j, k]
-            grid[i, j, k] = 0
+def get_neighbors(grid):
+    for coord in iterate_coords(grid.shape, padding=1):
+        neighbors_idxs = tuple([slice(max(0,dim-1), dim+2) for dim in coord])
 
-        box = grid[max(0,i-1):i+2, max(0,j-1):j+2, max(0,k-1):k+2].copy()
-        is_active = store if is_valid_coord(i, j, k, grid.shape) else 0
-
-        if is_valid_coord(i, j, k, grid.shape):
-            grid[i, j, k] = store
-
-        yield(i, j, k, is_active, box)
-
-
-def iterate(grid):
-    new_grid = np.zeros(np.array(grid.shape) + (2, 2, 2))
-
-    for i, j, k, is_active, box in get_boxes(grid):
-        if is_active:
-            new_grid[i+1, j+1, k+1] = box.sum() in [2, 3]
+        if is_valid_coord(coord, grid.shape):
+            store = grid[coord]
+            grid[coord] = 0
+            neighbors = grid[neighbors_idxs].copy()
+            is_active = store
+            grid[coord] = store
         else:
-            new_grid[i+1, j+1, k+1] = box.sum() == 3
+            neighbors = grid[neighbors_idxs].copy()
+            is_active = 0
 
-    return new_grid
+        yield coord, is_active, neighbors
 
+def evolve(grid, generations=1):
+    for _ in range(generations):
+        new_grid = np.zeros(expand(grid.shape, 2))
 
+        for coord, is_active, neighbors in get_neighbors(grid):
+            if is_active:
+                new_grid[shift_coord(coord, 1)] = neighbors.sum() in [2, 3]
+            else:
+                new_grid[shift_coord(coord, 1)] = neighbors.sum() == 3
+
+        grid = new_grid
+
+    return grid
 
 if __name__ == '__main__':
     with open('input.txt') as f:
-        grid = np.array([[symbol == '#' for symbol in line] for line in f.read().splitlines()])[None]
+        grid = np.array([[symbol == '#' for symbol in line] for line in f.read().splitlines()])
 
-    for _ in range(6):
-        grid = iterate(grid)
-
-    print('part 1:', int(grid.sum()))
+    print('part 1:', evolve(grid[None], 6).sum())
+    print('part 2:', evolve(grid[None, None], 6).sum())
