@@ -2,14 +2,18 @@
 
 import numpy as np
 
+
 def is_valid_coord(coord, shape):
-    for i in range(len(coord)):
-        if coord[i] < 0 or coord[i] >= shape[i]:
-            return False
-    return True
+    return all(0 <= dim < shape[i] for i, dim in enumerate(coord))
+
 
 def shift_coord(coord, offset):
     return tuple(dim + offset for dim in coord)
+
+
+def expand(dimensions, width):
+    return tuple(np.array(dimensions) + [width] * len(dimensions))
+
 
 def iterate_coords(shape, padding=0):
     if len(shape) == 1:
@@ -20,12 +24,10 @@ def iterate_coords(shape, padding=0):
             for coord in iterate_coords(shape[1:], padding):
                 yield(i, *coord)
 
-def expand(dimensions, width):
-    return tuple(np.array(dimensions) + [width] * len(dimensions))
 
 def get_neighbors(grid):
     for coord in iterate_coords(grid.shape, padding=1):
-        neighbors_idxs = tuple([slice(max(0,dim-1), dim+2) for dim in coord])
+        neighbors_idxs = tuple([slice(max(0, dim-1), dim+2) for dim in coord])
 
         if is_valid_coord(coord, grid.shape):
             store = grid[coord]
@@ -38,6 +40,7 @@ def get_neighbors(grid):
             is_active = 0
 
         yield coord, is_active, neighbors
+
 
 def evolve(grid, generations=1):
     for _ in range(generations):
@@ -53,9 +56,11 @@ def evolve(grid, generations=1):
 
     return grid
 
+
 if __name__ == '__main__':
     with open('input.txt') as f:
-        grid = np.array([[symbol == '#' for symbol in line] for line in f.read().splitlines()])
+        grid = np.array([[symbol == '#' for symbol in line]
+                         for line in f.read().splitlines()])
 
     print('part 1:', evolve(grid[None], 6).sum())
     print('part 2:', evolve(grid[None, None], 6).sum())
