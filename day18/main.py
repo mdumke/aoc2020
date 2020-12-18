@@ -25,12 +25,15 @@ def evaluate(formula, advanced=False):
     if formula.isdigit():
         return int(formula)
 
-    if op := get_operator(formula, advanced):
-        return op[0](
-            evaluate(formula[:op[1]], advanced),
-            evaluate(formula[op[1]+1:], advanced))
+    op = get_operator(formula, advanced)
 
-    return evaluate(formula[1:-1], advanced)
+    if op is None:
+        return evaluate(formula[1:-1], advanced)
+
+    return op[0](
+        evaluate(formula[:op[1]], advanced),
+        evaluate(formula[op[1]+1:], advanced))
+
 
 
 if __name__ == '__main__':
