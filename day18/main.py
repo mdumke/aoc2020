@@ -1,17 +1,26 @@
 """Day 18: Operation Order"""
 
-def find_main_operator(formula):
+from operator import add, mul
+
+
+def next_available(formula):
     depth = 0
+    candidate = None
     for i, symbol in enumerate(reversed(formula)):
         if symbol == '(':
             depth += 1
         if symbol == ')':
             depth -= 1
-        if symbol in '+*' and depth == 0:
-            return len(formula) - i - 1
+        if symbol == '+' and depth == 0:
+            candidate = add, len(formula) - i - 1
+            break
+        if symbol == '*' and depth == 0:
+            candidate = mul, len(formula) - i - 1
+            break
+    return candidate
 
 
-def find_lowest_precedence_operator(formula):
+def lowest_precedence(formula):
     depth = 0
     candidate = None
     for i, symbol in enumerate(reversed(formula)):
@@ -20,33 +29,28 @@ def find_lowest_precedence_operator(formula):
         if symbol == ')':
             depth -= 1
         if symbol == '*' and depth == 0:
-            candidate = len(formula) - i - 1
+            candidate = mul, len(formula) - i - 1
             break
         if symbol == '+' and depth == 0:
-            candidate = len(formula) - i - 1
+            candidate = add, len(formula) - i - 1
     return candidate
 
 
-def evaluate(formula, advanced=False):
+def evaluate(formula, get_operator):
     if formula.isdigit():
         return int(formula)
 
-    if advanced:
-        op_idx = find_lowest_precedence_operator(formula)
+    if op := get_operator(formula):
+        left = evaluate(formula[:op[1]], get_operator)
+        right = evaluate(formula[op[1]+1:], get_operator)
+        return op[0](left, right)
     else:
-        op_idx = find_main_operator(formula)
-
-    if op_idx is None:
-        return evaluate(formula[1:-1], advanced)
-    elif formula[op_idx] == '+':
-        return evaluate(formula[:op_idx], advanced) + evaluate(formula[op_idx+1:], advanced)
-    else:
-        return evaluate(formula[:op_idx], advanced) * evaluate(formula[op_idx+1:], advanced)
+        return evaluate(formula[1:-1], get_operator)
 
 
 if __name__ == '__main__':
     with open('input.txt') as f:
         formulas = [l.replace(' ', '') for l in f.read().splitlines()]
 
-    print('part 1:', sum(evaluate(f) for f in formulas))
-    print('part 2:', sum(evaluate(f, True) for f in formulas))
+    print('part 1:', sum(evaluate(f, next_available) for f in formulas))
+    print('part 2:', sum(evaluate(f, lowest_precedence) for f in formulas))
