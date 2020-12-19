@@ -30,19 +30,19 @@ def is_valid(message, rules):
     return False
 
 
+def parse_rule(line):
+    i, pattern = line.split(': ')
+    if '|' in pattern:
+        rule = [[int(n) for n in rule.split(' ')]
+                for rule in pattern.split(' | ')]
+    elif '"' in pattern:
+        rule = pattern[1:-1]
+    else:
+        rule = [int(n) for n in pattern.split(' ')]
+    return int(i), rule
+
+
 def load_input(replace=False):
-    def to_numbers(s): return [int(n) for n in s.split(' ')]
-
-    def parse_rule(line):
-        i, pattern = line.split(': ')
-        if '|' in pattern:
-            rule = [to_numbers(r) for r in pattern.split(' | ')]
-        elif '"' in pattern:
-            rule = pattern[1:-1]
-        else:
-            rule = [int(n) for n in pattern.split(' ')]
-        return int(i), rule
-
     with open('input.txt') as f:
         rules, messages = f.read().split('\n\n')
         if replace:
@@ -59,3 +59,4 @@ if __name__ == '__main__':
 
     rules, messages = load_input(True)
     print('part 2:', sum(is_valid(msg, rules) for msg in messages))
+
