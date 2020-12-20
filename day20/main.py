@@ -154,8 +154,8 @@ if __name__ == '__main__':
             np.array([list(l) for l in f.read().splitlines()]))
 
     grid = build_grid(images[0], images)
-    print('part 1:', grid[0][0].id * grid[0]
-          [-1].id * grid[-1][0].id * grid[-1][-1].id)
+    print('part 1:', grid[0][0].id * grid[0][-1].id * \
+                     grid[-1][0].id * grid[-1][-1].id)
 
     final = Image.from_grid(grid, margin=1)
     print('part 2:', count_hashes_without_monster(final, monster))
