@@ -1,3 +1,5 @@
+"""Day 20: Jurassic Jigsaw"""
+
 import re
 import numpy as np
 from collections import defaultdict
@@ -31,10 +33,6 @@ class Image:
                 return
             self.data = np.rot90(self.data)
 
-    def __repr__(self):
-        return str(self.id)
-
-
 def get_adjacent_positions(x, y, img):
     return zip([(x, y+1), (x+1, y), (x, y-1), (x-1, y)], zip(img.borders, [BOTTOM, LEFT, TOP, RIGHT]))
 
@@ -45,50 +43,102 @@ def build_lookup_by_border(images):
             lookup[border].append(img)
     return lookup
 
+
+def to_matrix(img_lookup):
+    (min_x, min_y), (max_x, max_y) = min(img_lookup), max(img_lookup)
+    matrix = []
+
+    for y in range(max_y, min_y-1, -1):
+        new_row = []
+        for x in range(min_x, max_x + 1):
+            new_row.append(img_lookup[(x, y)])
+        matrix.append(new_row)
+
+    return matrix
+
 def build_grid(start_img, images):
     available_images = build_lookup_by_border(images)
 
     x, y = 0, 0
-    fixed_positions = {start_img.id: (x, y)}
+    processed = {start_img.id}
+    grid = {(x, y): start_img}
+
     open_positions = [*get_adjacent_positions(x, y, start_img)]
 
     while open_positions:
         (x, y), (border, border_position) = open_positions.pop()
 
-        neighbors = [img for img in available_images.get(border, []) if img.id not in fixed_positions]
+        neighbors = [img for img in available_images.get(border, []) if img.id not in processed]
 
         if not neighbors:
-            neighbors = [img for img in available_images.get(border[::-1], []) if img.id not in fixed_positions]
+            neighbors = [img for img in available_images.get(border[::-1], []) if img.id not in processed]
 
         if not neighbors:
             continue
 
         neighbor = neighbors[0]
         neighbor.transform(border, border_position)
-        fixed_positions[neighbor.id] = (x, y)
+        processed.add(neighbor.id)
+        grid[(x, y)] = neighbor
         open_positions.extend(get_adjacent_positions(x, y, neighbor))
 
-    return {pos: _id for _id, pos in fixed_positions.items()}
+    return to_matrix(grid)
 
 
-def part1(images):
-    grid = build_grid(images[0], images)
-    (min_x, min_y), (max_x, max_y) = min(grid), max(grid)
+def to_image(tile_matrix):
+    return np.concatenate([np.concatenate([img.data[1:-1,1:-1] for img in row], axis=1)
+                          for row in tile_matrix], axis=0)
 
-    result = []
+def mark_monsters(image):
+    monster = np.array([
+        list('                  # '),
+        list('#    ##    ##    ###'),
+        list(' #  #  #  #  #  #   ')])
 
-    for x in range(min_x, max_x + 1):
-        new_row = []
-        for y in range(min_y, max_y + 1):
-            new_row.append(grid[(x, y)])
-        result.append(new_row)
+    monster_idxs = np.c_[np.where(monster == '#')]
+    n_monsters = 0
 
-    return result[0][0] * result[0][-1] * result[-1][0] * result[-1][-1]
+    for x in range(image.shape[0] - monster.shape[0]):
+        for y in range(image.shape[1] - monster.shape[1]):
+            n_matches = sum(image[i, j] == '#' for i, j in monster_idxs + (x, y))
+            if  n_matches == len(monster_idxs):
+                n_monsters += 1
+
+                for i, j in monster_idxs + (x, y):
+                    image[i, j] = 'O'
+
+    return image, n_monsters
+
+def count_hashes_without_monster(image):
+    img = image.copy()
+
+    for _ in range(4):
+        img, n_monsters = mark_monsters(img)
+
+        if n_monsters > 0:
+            return np.where(img == '#')[0].shape[0]
+
+        img = np.rot90(img)
+
+    img = np.flip(img)
+
+    for _ in range(4):
+        img, n_monsters = mark_monsters(img)
+
+        if n_monsters > 0:
+            return np.where(img == '#')[0].shape[0]
+
+        img = np.rot90(img)
 
 if __name__ == '__main__':
     with open('input.txt') as f:
         image_data = [l.splitlines() for l in f.read().split('\n\n')]
         images = [Image(line) for line in image_data]
 
-    print('part 1:', part1(images))
+    grid = build_grid(images[0], images)
+    print('part 1:', grid[0][0].id * grid[0][-1].id * grid[-1][0].id * grid[-1][-1].id)
+
+    final = to_image(grid)
+    print('part 2:', count_hashes_without_monster(final))
+
 
