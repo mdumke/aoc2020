@@ -18,6 +18,18 @@ class Image:
             int(re.split(r'[ :]', lines[0])[1]),
             np.array([list(l) for l in lines[1:]]))
 
+    @staticmethod
+    def from_data(data):
+        return Image(None, data)
+
+    @staticmethod
+    def from_grid(grid, margin=0):
+        data = np.concatenate([
+            np.concatenate([img.data[margin:-margin, margin:-margin]
+                            for img in row], axis=1)
+            for row in grid], axis=0)
+        return Image.from_data(data)
+
     @property
     def borders(self):
         # top, right, bottom, left
@@ -41,6 +53,15 @@ class Image:
         for img in self.variations():
             if img.borders[target_position] == border:
                 return img
+
+    def find(self, symbol):
+        return np.c_[np.where(self.data == symbol)]
+
+    def count(self, symbol):
+        return len(self.find(symbol))
+
+    def __getitem__(self, idxs):
+        return self.data[idxs]
 
 
 def get_adjacent_positions(x, y, img):
@@ -99,53 +120,29 @@ def build_grid(start_img, images):
     return to_matrix(grid)
 
 
-def to_image(tile_matrix):
-    return np.concatenate([np.concatenate([img.data[1:-1, 1:-1] for img in row], axis=1)
-                           for row in tile_matrix], axis=0)
+def mark_monsters(image, monster):
+    def monster_found_at(x, y):
+        matches = [image[i, j] == '#' for i, j in monster.find('#') + (x, y)]
+        return sum(matches) == len(monster.find('#'))
 
+    monster_idxs = monster.find('#')
+    monster_found = False
 
-def mark_monsters(image):
-    monster = np.array([
-        list('                  # '),
-        list('#    ##    ##    ###'),
-        list(' #  #  #  #  #  #   ')])
-
-    monster_idxs = np.c_[np.where(monster == '#')]
-    n_monsters = 0
-
-    for x in range(image.shape[0] - monster.shape[0]):
-        for y in range(image.shape[1] - monster.shape[1]):
-            n_matches = sum(image[i, j] == '#' for i,
-                            j in monster_idxs + (x, y))
-            if n_matches == len(monster_idxs):
-                n_monsters += 1
+    for x in range(image.data.shape[0] - monster.data.shape[0]):
+        for y in range(image.data.shape[1] - monster.data.shape[1]):
+            if monster_found_at(x, y):
+                monster_found = True
 
                 for i, j in monster_idxs + (x, y):
-                    image[i, j] = 'O'
+                    image.data[i, j] = 'O'
 
-    return image, n_monsters
+    return monster_found
 
 
-def count_hashes_without_monster(image):
-    img = image.copy()
-
-    for _ in range(4):
-        img, n_monsters = mark_monsters(img)
-
-        if n_monsters > 0:
-            return np.where(img == '#')[0].shape[0]
-
-        img = np.rot90(img)
-
-    img = np.flip(img)
-
-    for _ in range(4):
-        img, n_monsters = mark_monsters(img)
-
-        if n_monsters > 0:
-            return np.where(img == '#')[0].shape[0]
-
-        img = np.rot90(img)
+def count_hashes_without_monster(image, monster):
+    for img in image.variations():
+        if mark_monsters(img, monster):
+            return img.count('#')
 
 
 if __name__ == '__main__':
@@ -153,9 +150,13 @@ if __name__ == '__main__':
         images = [Image.from_input(lines.splitlines())
                   for lines in f.read().split('\n\n')]
 
+    with open('monster.txt') as f:
+        monster = Image.from_data(
+            np.array([list(l) for l in f.read().splitlines()]))
+
     grid = build_grid(images[0], images)
     print('part 1:', grid[0][0].id * grid[0]
           [-1].id * grid[-1][0].id * grid[-1][-1].id)
 
-    final = to_image(grid)
-    print('part 2:', count_hashes_without_monster(final))
+    final = Image.from_grid(grid, margin=1)
+    print('part 2:', count_hashes_without_monster(final, monster))
