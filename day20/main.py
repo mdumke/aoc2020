@@ -123,9 +123,8 @@ def build_grid(start_img, images):
 def mark_monsters(image, monster):
     def monster_found_at(x, y):
         matches = [image[i, j] == '#' for i, j in monster.find('#') + (x, y)]
-        return sum(matches) == len(monster.find('#'))
+        return sum(matches) == monster.count('#')
 
-    monster_idxs = monster.find('#')
     monster_found = False
 
     for x in range(image.data.shape[0] - monster.data.shape[0]):
@@ -133,7 +132,7 @@ def mark_monsters(image, monster):
             if monster_found_at(x, y):
                 monster_found = True
 
-                for i, j in monster_idxs + (x, y):
+                for i, j in monster.find('#') + (x, y):
                     image.data[i, j] = 'O'
 
     return monster_found
