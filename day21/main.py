@@ -15,31 +15,32 @@ def find_possible_ingredients(foods):
     return candidates
 
 
-def combine_sets(sets):
+def combine(sets):
     """returns the union of given sets"""
     return sets[0].union(*sets[1:])
 
 
+def find_dangerous_ingredients(foods):
+    """returns a set of ingredients that have allergenes"""
+    candidates = find_possible_ingredients(foods)
+    return combine(list(candidates.values()))
+
+
 def count_ingredients_without_allergenes(foods):
     """returns number of ingredients that cannot contain known allergenes"""
-    candidates = find_possible_ingredients(foods)
-    return sum([ing not in combine_sets(list(candidates.values()))
+    dangerous_ingredients = find_dangerous_ingredients(foods)
+    return sum([ing not in dangerous_ingredients
                 for ingredients, _ in foods for ing in ingredients])
 
 
 def find_allergene_assignment(foods):
     """returns list of [(allergene, ingredient)]"""
     candidates = find_possible_ingredients(foods)
-    combined = combine_sets(list(candidates.values()))
+    ingredients = list(find_dangerous_ingredients(foods))
 
-    for assignment in permutations(list(combined), r=len(candidates)):
-        valid = True
-        for allergene, ingredient in zip(candidates, assignment):
-            if ingredient not in candidates[allergene]:
-                valid = False
-                break
-        if valid:
-            return list(zip(candidates, assignment))
+    for assignment in permutations(ingredients, r=len(ingredients)):
+        if all(ing in candidates[a] for a, ing in zip(candidates, assignment)):
+            return zip(candidates, assignment)
 
 
 def get_dangerous_ingredients(foods):
