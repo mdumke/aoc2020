@@ -1,44 +1,25 @@
 """Day 22: Crab Combat"""
 
 
-class Deck:
-    def __init__(self, cards):
-        self.cards = cards.copy()
-
-    @property
-    def size(self):
-        return len(self.cards)
-
-    def deal(self):
-        return self.cards.pop(0)
-
-    def append(self, *cards):
-        self.cards.extend(cards)
-
+class Deck(list):
     def copy(self):
-        return Deck(self.cards.copy())
+        return Deck(super(Deck, self).copy())
 
-    def subset(self, size):
-        return Deck(self.cards[:size].copy())
-
-    def score(self):
-        return sum([(i+1) * card for i, card in enumerate(reversed(self.cards))])
-
-    def __len__(self):
-        return len(self.cards)
+    def __getitem__(self, idx):
+        return Deck(super(Deck, self).__getitem__(idx))
 
     def __hash__(self):
-        return hash(''.join(map(str, self.cards)))
+        return hash(''.join(map(str, self)))
 
 
 def combat(deck1, deck2):
     while deck1 and deck2:
-        card1, card2 = deck1.deal(), deck2.deal()
+        card1, card2 = deck1.pop(0), deck2.pop(0)
 
         if card1 > card2:
-            deck1.append(card1, card2)
+            deck1.extend([card1, card2])
         else:
-            deck2.append(card2, card1)
+            deck2.extend([card2, card1])
 
     return deck1, deck2
 
@@ -51,37 +32,45 @@ def recursive_combat(deck1, deck2):
         if deck1 in cache1 and deck2 in cache2:
             return deck1, []
 
-        if deck1.size == 0 or deck2.size == 0:
+        if not deck1 or not deck2:
             return deck1, deck2
 
         cache1.add(deck1)
         cache2.add(deck2)
 
-        card1 = deck1.deal()
-        card2 = deck2.deal()
+        card1 = deck1.pop(0)
+        card2 = deck2.pop(0)
 
-        if deck1.size >= card1 and deck2.size >= card2:
-            p1, _ = recursive_combat(deck1.subset(card1), deck2.subset(card2))
+        if len(deck1) >= card1 and len(deck2) >= card2:
+            p1, _ = recursive_combat(
+                deck1[:card1].copy(),
+                deck2[:card2].copy())
 
-            if p1.size > 0:
-                deck1.append(card1, card2)
+            if p1:
+                deck1.extend([card1, card2])
             else:
-                deck2.append(card2, card1)
+                deck2.extend([card2, card1])
         elif card1 > card2:
-            deck1.append(card1, card2)
+            deck1.extend([card1, card2])
         else:
-            deck2.append(card2, card1)
+            deck2.extend([card2, card1])
+
+
+def score(deck):
+    return sum([(i+1) * card for i, card in enumerate(reversed(deck))])
+
+
+def load_deck(file):
+    with open(file) as f:
+        return Deck(map(int, f.readlines()))
 
 
 if __name__ == '__main__':
-    with open('player1.txt') as f:
-        player1 = Deck([int(n) for n in f.readlines()])
-
-    with open('player2.txt') as f:
-        player2 = Deck([int(n) for n in f.readlines()])
+    player1 = load_deck('player1.txt')
+    player2 = load_deck('player2.txt')
 
     p1, p2 = combat(player1.copy(), player2.copy())
-    print('part 1:', p1.score() if p1.size > 0 else p2.score())
+    print('part 1:', score(p1 if p1 else p2))
 
     p1, p2 = recursive_combat(player1.copy(), player2.copy())
-    print('part 2:', p1.score() if p1.size > 0 else p2.score())
+    print('part 2:', score(p1 if p1 else p2))
