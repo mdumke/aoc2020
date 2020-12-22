@@ -49,10 +49,6 @@ def recursive_combat(deck1, deck2):
             deck2.extend([card2, card1])
 
 
-def score(deck):
-    return sum([(i+1) * card for i, card in enumerate(reversed(deck))])
-
-
 def load_deck(file):
     with open(file) as f:
         return Deck(map(int, f.readlines()))
