@@ -21,7 +21,7 @@ def move(cups: dict, current: int, max_n: int) -> int:
            cups[cups[cups[current]]])
 
     # find cup to insert after
-    target = (current - 1) % max_n
+    target = current - 1
     while target in tmp or target == 0:
         target = (target - 1) % (max_n + 1)
 
