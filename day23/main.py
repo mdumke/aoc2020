@@ -1,32 +1,49 @@
-def find_target(cups, current):
-    candidate = current-1
+from more_itertools import pairwise
 
-    while candidate > 0:
-        if candidate in cups:
-            return cups.index(candidate)
-        candidate -= 1
+def serialize(cups, start):
+    done = set()
+    result = ''
+    current = start
 
-    return cups.index(max(cups))
+    while current not in done:
+        result += str(current)
+        done.add(current)
+        current = cups[current]
 
-
-def move(cups):
-    tmp = [*cups[4:], cups[0]]
-    target = find_target(tmp, cups[0])
-    return [*tmp[:target+1], *cups[1:4], *tmp[target+1:]]
+    return result
 
 
-def find_final_constellation(cups, epochs):
-    for _ in range(epochs):
-        cups = move(cups)
-    return cups
+def move(cups, current, max_n):
+    tmp = (cups[current],
+           cups[cups[current]],
+           cups[cups[cups[current]]])
+
+    cups[current] = cups[tmp[-1]]
+    target = (current - 1) % max_n
+
+    while target in tmp or target == 0:
+        target = (target - 1) % (max_n + 1)
+
+    cups[tmp[-1]] = cups[target]
+    cups[target] = tmp[0]
+
+    return cups[current]
 
 
-def cups_after_1(cups):
-    one = cups.index(1)
-    return ''.join(map(str, [*cups[one+1:], *cups[:one]]))
+def play_game(numbers):
+    cups = dict(pairwise(numbers))
+    cups[numbers[-1]] = numbers[0]
+
+    current = numbers[0]
+    max_n = max(numbers)
+
+    for i in range(100):
+        current = move(cups, current, max_n)
+
+    return serialize(cups, 1)[1:]
 
 
 if __name__ == '__main__':
-    cups = list(map(int, '247819356'))
+    numbers = [2, 4, 7, 8, 1, 9, 3, 5, 6]
 
-    print('part 1:', cups_after_1(find_final_constellation(cups, 100)))
+    print('part 1:', play_game(numbers))
