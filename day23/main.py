@@ -49,9 +49,7 @@ def play_game(numbers: list, rounds: int) -> list:
 
 if __name__ == '__main__':
     numbers = [2, 4, 7, 8, 1, 9, 3, 5, 6]
-
-    cups = play_game(numbers, 100)
-    print('part 1:', cups)
+    print('part 1:', play_game(numbers, 100))
 
     numbers.extend(range(max(numbers)+1, 1000001))
     cups = play_game(numbers, 10000000)
