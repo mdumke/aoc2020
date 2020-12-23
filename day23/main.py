@@ -1,6 +1,5 @@
 """Day 23: Crab Cups"""
 
-import math
 from more_itertools import pairwise
 
 
@@ -60,4 +59,4 @@ if __name__ == '__main__':
     print('part 1:', cups[1:])
 
     cups = play_game(numbers, True)
-    print('part 2:', math.prod(cups[1:3]))
+    print('part 2:', cups[1] * cups[2])
