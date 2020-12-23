@@ -34,7 +34,7 @@ def move(cups: dict, current: int, max_n: int) -> int:
 
 
 def play_game(numbers: list, rounds: int) -> list:
-    """return final constellation of cups, starting from cup 1"""
+    """return final constellation of cups, starting after cup 1"""
     # build cups dict {cup: next-cup}
     cups = dict(pairwise(numbers))
     cups[numbers[-1]] = numbers[0]
