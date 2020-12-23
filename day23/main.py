@@ -3,21 +3,19 @@
 from more_itertools import pairwise
 
 
-def as_sequence(cups: dict, current: int) -> list:
-    """return cups as list starting from given value"""
-    seen = set()
+def as_sequence(cups: dict, start: int) -> list:
+    """return cups as list starting *after* given value"""
     seq = []
-
-    while current not in seen:
+    current = cups[start]
+    while current != start:
         seq.append(current)
-        seen.add(current)
         current = cups[current]
-
     return seq
 
 
 def move(cups: dict, current: int, max_n: int) -> int:
     """return new current cup after one move, mutates cups"""
+    # extract sub-sequence to move around
     tmp = (cups[current],
            cups[cups[current]],
            cups[cups[cups[current]]])
@@ -53,8 +51,8 @@ if __name__ == '__main__':
     numbers = [2, 4, 7, 8, 1, 9, 3, 5, 6]
 
     cups = play_game(numbers, 100)
-    print('part 1:', cups[1:])
+    print('part 1:', cups)
 
     numbers.extend(range(max(numbers)+1, 1000001))
     cups = play_game(numbers, 10000000)
-    print('part 2:', cups[1] * cups[2])
+    print('part 2:', cups[0] * cups[1])
