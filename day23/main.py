@@ -3,50 +3,47 @@
 from more_itertools import pairwise
 
 
-def as_sequence(cups, start):
+def as_sequence(cups: dict, current: int) -> list:
     """return cups as list starting from given value"""
-    processed = set()
-    sequence = []
-    current = start
+    seen = set()
+    seq = []
 
-    while current not in processed:
-        sequence.append(current)
-        processed.add(current)
+    while current not in seen:
+        seq.append(current)
+        seen.add(current)
         current = cups[current]
 
-    return sequence
+    return seq
 
 
-def move(cups, current, max_n):
+def move(cups: dict, current: int, max_n: int) -> int:
     """return new current cup after one move, mutates cups"""
     tmp = (cups[current],
            cups[cups[current]],
            cups[cups[cups[current]]])
 
-    cups[current] = cups[tmp[-1]]
+    # find cup to insert after
     target = (current - 1) % max_n
-
     while target in tmp or target == 0:
         target = (target - 1) % (max_n + 1)
 
+    # rewire cups to insert tmp sequence
+    cups[current] = cups[tmp[-1]]
     cups[tmp[-1]] = cups[target]
     cups[target] = tmp[0]
 
     return cups[current]
 
 
-def play_game(numbers, advanced=False):
+def play_game(numbers: list, rounds: int) -> list:
     """return final constellation of cups, starting from cup 1"""
-    if advanced:
-        numbers.extend(range(max(numbers)+1, 1000001))
-
+    # build cups dict {cup: next-cup}
     cups = dict(pairwise(numbers))
     cups[numbers[-1]] = numbers[0]
-
     current = numbers[0]
     max_n = max(numbers)
 
-    for _ in range(10000000 if advanced else 100):
+    for _ in range(rounds):
         current = move(cups, current, max_n)
 
     return as_sequence(cups, 1)
@@ -55,8 +52,9 @@ def play_game(numbers, advanced=False):
 if __name__ == '__main__':
     numbers = [2, 4, 7, 8, 1, 9, 3, 5, 6]
 
-    cups = play_game(numbers)
+    cups = play_game(numbers, 100)
     print('part 1:', cups[1:])
 
-    cups = play_game(numbers, True)
+    numbers.extend(range(max(numbers)+1, 1000001))
+    cups = play_game(numbers, 10000000)
     print('part 2:', cups[1] * cups[2])
