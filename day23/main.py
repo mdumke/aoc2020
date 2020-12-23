@@ -3,20 +3,23 @@
 import math
 from more_itertools import pairwise
 
-def serialize(cups, start):
-    done = set()
-    result = []
+
+def as_sequence(cups, start):
+    """return cups as list starting from given value"""
+    processed = set()
+    sequence = []
     current = start
 
-    while current not in done:
-        result.append(current)
-        done.add(current)
+    while current not in processed:
+        sequence.append(current)
+        processed.add(current)
         current = cups[current]
 
-    return result
+    return sequence
 
 
 def move(cups, current, max_n):
+    """return new current cup after one move, mutates cups"""
     tmp = (cups[current],
            cups[cups[current]],
            cups[cups[cups[current]]])
@@ -33,36 +36,28 @@ def move(cups, current, max_n):
     return cups[current]
 
 
-def play_game(numbers):
+def play_game(numbers, advanced=False):
+    """return final constellation of cups, starting from cup 1"""
+    if advanced:
+        numbers.extend(range(max(numbers)+1, 1000001))
+
     cups = dict(pairwise(numbers))
     cups[numbers[-1]] = numbers[0]
 
     current = numbers[0]
     max_n = max(numbers)
 
-    for i in range(100):
+    for _ in range(10000000 if advanced else 100):
         current = move(cups, current, max_n)
 
-    return ''.join(map(str, serialize(cups, 1)[1:]))
-
-
-def play_advanced_game(numbers):
-    numbers = [*numbers, *list(range(max(numbers)+1, 1000001))]
-    cups = dict(pairwise(numbers))
-    cups[numbers[-1]] = numbers[0]
-
-    current = numbers[0]
-    max_n = max(numbers)
-
-    for i in range(10_000_000):
-        current = move(cups, current, max_n)
-
-    return serialize(cups, 1)[1:3]
+    return as_sequence(cups, 1)
 
 
 if __name__ == '__main__':
     numbers = [2, 4, 7, 8, 1, 9, 3, 5, 6]
 
-    print('part 1:', play_game(numbers))
-    print('part 2:', math.prod(play_advanced_game(numbers)))
+    cups = play_game(numbers)
+    print('part 1:', cups[1:])
 
+    cups = play_game(numbers, True)
+    print('part 2:', math.prod(cups[1:3]))
