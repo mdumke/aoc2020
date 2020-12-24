@@ -2,6 +2,7 @@
 
 
 import re
+from functools import reduce
 from collections import defaultdict
 
 BLACK, WHITE = 1, 0
@@ -16,34 +17,37 @@ DIRECTIONS = {
     'nw': (-0.5, 1)}
 
 
-def evaluate(steps):
-    current = [0, 0]
+def add(coord1, coord2):
+    return coord1[0] + coord2[0], coord1[1] + coord2[1]
 
-    for step in steps:
-        current[0] += step[0]
-        current[1] += step[1]
 
-    return tuple(current)
+def final_coord(steps):
+    """return coord after following STEPS from origin"""
+    return reduce(add, steps, (0, 0))
 
 
 def get_initial_state(moves):
+    """return initial BLACK/WHITE tiles"""
     tiles = defaultdict(int)
-    for tile in [evaluate(steps) for steps in moves]:
+    for tile in [final_coord(steps) for steps in moves]:
         tiles[tile] = (tiles[tile] + 1) % 2
     return tiles
 
 
 def get_neighbors(tile, tiles):
+    """return six neighbors of given tile"""
     return {(x := tile[0] + n[0], y := tile[1] + n[1]): tiles.get((x, y)) or 0
             for n in DIRECTIONS.values()}
 
 
 def get_all_neighbors(tiles):
+    """returns tiles that are adjacent to any existing tile"""
     return {(x := tile[0] + n[0], y := tile[1] + n[1]): tiles.get((x, y)) or 0
             for tile in tiles for n in DIRECTIONS.values()}
 
 
 def update_tile(tile, color, tiles):
+    """return new state BLACK/WHITE of given tile"""
     black_neighbors = sum(get_neighbors(tile, tiles).values())
 
     if color == BLACK:
@@ -53,6 +57,7 @@ def update_tile(tile, color, tiles):
 
 
 def update_floor(tiles):
+    """returns tiles after update step"""
     new_tiles = defaultdict(int)
 
     # add neighbors, because they may have to flip
@@ -66,6 +71,7 @@ def update_floor(tiles):
 
 
 def evolve(tiles, epochs):
+    """return state of floor after EPOCHS iterations"""
     for _ in range(epochs):
         tiles = update_floor(tiles)
     return tiles
