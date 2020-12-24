@@ -15,6 +15,8 @@ DIRECTIONS = {
     'ne': (0.5, 1),
     'nw': (-0.5, 1)}
 
+NEIGHBORS = DIRECTIONS.values()
+
 
 def add(coord1, coord2):
     return coord1[0] + coord2[0], coord1[1] + coord2[1]
@@ -35,13 +37,12 @@ def get_initial_state(moves):
 
 def get_neighboring_colors(tile, tiles):
     """return colors of all six neighbors of TILE"""
-    return [tiles[add(tile, step)] for step in DIRECTIONS.values()]
+    return [tiles[add(tile, step)] for step in NEIGHBORS]
 
 
-def get_all_neighbors(tiles):
-    """return all tiles that are adjacent to any existing tile"""
-    return {(x := tile[0] + n[0], y := tile[1] + n[1]): tiles.get((x, y)) or 0
-            for tile in tiles for n in DIRECTIONS.values()}
+def get_all_neighbor_coords(tiles):
+    """return all coordinats adjacent to any existing tile"""
+    return [add(tile, neighbor) for tile in tiles for neighbor in NEIGHBORS]
 
 
 def update_tile(tile, color, tiles):
@@ -59,7 +60,9 @@ def update_floor(tiles):
     new_tiles = defaultdict(int)
 
     # add neighbors, because they may have to flip
-    new_tiles.update({**get_all_neighbors(tiles), **tiles})
+    new_tiles.update({
+        **dict.fromkeys(get_all_neighbor_coords(tiles), 0),
+        **tiles})
 
     # check update conditions
     for tile, color in new_tiles.items():
