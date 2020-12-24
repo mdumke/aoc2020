@@ -7,22 +7,13 @@ from collections import defaultdict
 BLACK, WHITE = 1, 0
 
 
-directions = {
+DIRECTIONS = {
     'e': (1, 0),
     'w': (-1, 0),
     'se': (0.5, -1),
     'sw': (-0.5, -1),
     'ne': (0.5, 1),
     'nw': (-0.5, 1)}
-
-
-neighbors = [
-    (1, 0),
-    (-1, 0),
-    (0.5, -1),
-    (-0.5, -1),
-    (0.5, 1),
-    (-0.5, 1)]
 
 
 def evaluate(steps):
@@ -37,12 +28,12 @@ def evaluate(steps):
 
 def get_neighbors(tile, tiles):
     return {(x := tile[0] + n[0], y := tile[1] + n[1]): tiles.get((x, y)) or 0
-            for n in neighbors}
+            for n in DIRECTIONS.values()}
 
 
 def get_all_neighbors(tiles):
     return {(x := tile[0] + n[0], y := tile[1] + n[1]): tiles.get((x, y)) or 0
-            for tile in tiles for n in neighbors}
+            for tile in tiles for n in DIRECTIONS.values()}
 
 
 def evolve_tile(tile, color, tiles):
@@ -68,7 +59,7 @@ def evolve(tiles):
 
 
 with open('input.txt') as f:
-    moves = [[directions[d] for d in re.findall('(se|sw|ne|nw|e|w)', line)]
+    moves = [[DIRECTIONS[d] for d in re.findall('(se|sw|ne|nw|e|w)', line)]
              for line in f.read().splitlines()]
 
     tiles = defaultdict(int)
