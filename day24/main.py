@@ -35,9 +35,9 @@ def get_initial_state(moves):
     return tiles
 
 
-def get_neighboring_colors(tile, tiles):
+def num_black_neighbors(tile, tiles):
     """return colors of all six neighbors of TILE"""
-    return [tiles[add(tile, step)] for step in NEIGHBORS]
+    return sum([tiles[add(tile, step)] for step in NEIGHBORS])
 
 
 def get_all_neighbor_coords(tiles):
@@ -47,12 +47,10 @@ def get_all_neighbor_coords(tiles):
 
 def update_tile(tile, color, tiles):
     """return new state BLACK/WHITE of given tile"""
-    black_neighbors = sum(get_neighboring_colors(tile, tiles))
-
     if color == BLACK:
-        return black_neighbors in [1, 2]
+        return num_black_neighbors(tile, tiles) in [1, 2]
     if color == WHITE:
-        return black_neighbors == 2
+        return num_black_neighbors(tile, tiles) == 2
 
 
 def update_floor(tiles):
