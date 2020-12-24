@@ -26,6 +26,13 @@ def evaluate(steps):
     return tuple(current)
 
 
+def get_initial_state(moves):
+    tiles = defaultdict(int)
+    for tile in [evaluate(steps) for steps in moves]:
+        tiles[tile] = (tiles[tile] + 1) % 2
+    return tiles
+
+
 def get_neighbors(tile, tiles):
     return {(x := tile[0] + n[0], y := tile[1] + n[1]): tiles.get((x, y)) or 0
             for n in DIRECTIONS.values()}
@@ -36,7 +43,7 @@ def get_all_neighbors(tiles):
             for tile in tiles for n in DIRECTIONS.values()}
 
 
-def evolve_tile(tile, color, tiles):
+def update_tile(tile, color, tiles):
     black_neighbors = sum(get_neighbors(tile, tiles).values())
 
     if color == BLACK:
@@ -45,7 +52,7 @@ def evolve_tile(tile, color, tiles):
         return black_neighbors == 2
 
 
-def evolve(tiles):
+def update_floor(tiles):
     new_tiles = defaultdict(int)
 
     # add neighbors, because they may have to flip
@@ -53,23 +60,21 @@ def evolve(tiles):
 
     # check update conditions
     for tile, color in new_tiles.items():
-        new_tiles[tile] = evolve_tile(tile, color, tiles)
+        new_tiles[tile] = update_tile(tile, color, tiles)
 
     return new_tiles
+
+
+def evolve(tiles, epochs):
+    for _ in range(epochs):
+        tiles = update_floor(tiles)
+    return tiles
 
 
 with open('input.txt') as f:
     moves = [[DIRECTIONS[d] for d in re.findall('(se|sw|ne|nw|e|w)', line)]
              for line in f.read().splitlines()]
 
-    tiles = defaultdict(int)
-
-    for tile in [evaluate(steps) for steps in moves]:
-        tiles[tile] = (tiles[tile] + 1) % 2
-
+    tiles = get_initial_state(moves)
     print('part 1:', sum(tiles.values()))
-
-    for i in range(100):
-        tiles = evolve(tiles)
-
-    print('part 2:', sum(tiles.values()))
+    print('part 2:', sum(evolve(tiles, 100).values()))
