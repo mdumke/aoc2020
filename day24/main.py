@@ -7,7 +7,6 @@ from collections import defaultdict
 
 BLACK, WHITE = 1, 0
 
-
 DIRECTIONS = {
     'e': (1, 0),
     'w': (-1, 0),
@@ -34,21 +33,20 @@ def get_initial_state(moves):
     return tiles
 
 
-def get_neighbors(tile, tiles):
-    """return six neighbors of given tile"""
-    return {(x := tile[0] + n[0], y := tile[1] + n[1]): tiles.get((x, y)) or 0
-            for n in DIRECTIONS.values()}
+def get_neighboring_colors(tile, tiles):
+    """return colors of all six neighbors of TILE"""
+    return [tiles[add(tile, step)] for step in DIRECTIONS.values()]
 
 
 def get_all_neighbors(tiles):
-    """returns tiles that are adjacent to any existing tile"""
+    """return all tiles that are adjacent to any existing tile"""
     return {(x := tile[0] + n[0], y := tile[1] + n[1]): tiles.get((x, y)) or 0
             for tile in tiles for n in DIRECTIONS.values()}
 
 
 def update_tile(tile, color, tiles):
     """return new state BLACK/WHITE of given tile"""
-    black_neighbors = sum(get_neighbors(tile, tiles).values())
+    black_neighbors = sum(get_neighboring_colors(tile, tiles))
 
     if color == BLACK:
         return black_neighbors in [1, 2]
