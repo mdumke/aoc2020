@@ -4,11 +4,10 @@
 def find_loop_size(key):
     value = 1
     loop = 0
-    while True:
+    while value != key:
         loop += 1
         value = (value * 7) % 20201227
-        if value == key:
-            return loop
+    return loop
 
 
 def transform(subject, loop_size):
