@@ -18,12 +18,8 @@ def transform(subject, loop_size):
     return value
 
 
-def find_encryption_key(key1, key2):
-    return transform(key2, find_loop_size(key1))
-
-
 if __name__ == '__main__':
     card_key = 15628416
     door_key = 11161639
 
-    print(find_encryption_key(card_key, door_key))
+    print(transform(door_key, find_loop_size(card_key)))
