@@ -57,7 +57,7 @@ def update_floor(tiles):
     """returns tiles after update step"""
     new_tiles = defaultdict(int)
 
-    # add neighbors, because they may have to flip
+    # add all neighbors, because they may have to flip
     new_tiles.update({
         **dict.fromkeys(get_all_neighbor_coords(tiles), 0),
         **tiles})

@@ -1,3 +1,6 @@
+"""Day 25: Combo Breaker"""
+
+
 def find_loop_size(key):
     value = 1
     loop = 0
@@ -6,6 +9,7 @@ def find_loop_size(key):
         value = (value * 7) % 20201227
         if value == key:
             return loop
+
 
 def transform(subject, loop_size):
     value = 1
@@ -22,5 +26,4 @@ if __name__ == '__main__':
     card_key = 15628416
     door_key = 11161639
 
-    print('part 1:', find_encryption_key(card_key, door_key))
-
+    print(find_encryption_key(card_key, door_key))
